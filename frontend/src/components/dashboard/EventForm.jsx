@@ -1,87 +1,35 @@
 import React, { useState } from 'react';
 import axios from '../../utils/axios';
 
-const EventForm = () => {
-  const [eventData, setEventData] = useState({
+const EventForm = ({ onClose }) => {
+  const [formData, setFormData] = useState({
     title: '',
-    eventType: '',
     description: '',
+    eventType: '',
+    sport: '',
+    level: '',
+    ageGroup: {
+      min: '',
+      max: ''
+    },
     date: '',
     endDate: '',
     location: {
       venue: '',
       city: '',
       state: '',
-      country: 'India'
+      country: ''
     },
-    sport: '',
-    level: 'district',
     travelAllowance: {
-      amount: '',
-      type: 'fixed'
-    }
+      provided: false,
+      amount: {
+        min: '',
+        max: ''
+      },
+      details: ''
+    },
+    eventBanner: ''
   });
-
-  const styles = {
-    container: {
-      maxWidth: '800px',
-      margin: '0 auto',
-      padding: '20px'
-    },
-    section: {
-      backgroundColor: 'white',
-      padding: '20px',
-      borderRadius: '8px',
-      marginBottom: '20px',
-      boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-    },
-    sectionTitle: {
-      fontSize: '18px',
-      fontWeight: '600',
-      marginBottom: '20px',
-      color: '#2d3748',
-      borderBottom: '2px solid #edf2f7',
-      paddingBottom: '10px'
-    },
-    formRow: {
-      display: 'flex',
-      gap: '20px',
-      marginBottom: '20px'
-    },
-    formGroup: {
-      marginBottom: '20px',
-      flex: 1
-    },
-    label: {
-      display: 'block',
-      marginBottom: '8px',
-      fontWeight: '500'
-    },
-    input: {
-      width: '100%',
-      padding: '8px 12px',
-      borderRadius: '4px',
-      border: '1px solid #ddd',
-      fontSize: '16px'
-    },
-    textarea: {
-      width: '100%',
-      padding: '8px 12px',
-      borderRadius: '4px',
-      border: '1px solid #ddd',
-      fontSize: '16px',
-      minHeight: '100px'
-    },
-    button: {
-      backgroundColor: '#4CAF50',
-      color: 'white',
-      padding: '10px 20px',
-      border: 'none',
-      borderRadius: '4px',
-      cursor: 'pointer',
-      fontSize: '16px'
-    }
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -89,7 +37,7 @@ const EventForm = () => {
     if (name.includes('.')) {
       const [parent, child] = name.split('.');
       if (parent === 'location') {
-        setEventData(prev => ({
+        setFormData(prev => ({
           ...prev,
           location: {
             ...prev.location,
@@ -98,7 +46,7 @@ const EventForm = () => {
         }));
       } else if (parent === 'travelAllowance') {
         const finalValue = child === 'amount' ? value.replace(/[^0-9]/g, '') : value;
-        setEventData(prev => ({
+        setFormData(prev => ({
           ...prev,
           travelAllowance: {
             ...prev.travelAllowance,
@@ -107,7 +55,7 @@ const EventForm = () => {
         }));
       }
     } else {
-      setEventData(prev => ({
+      setFormData(prev => ({
         ...prev,
         [name]: value
       }));
@@ -119,14 +67,14 @@ const EventForm = () => {
     try {
       // Format the data before sending
       const formattedData = {
-        ...eventData,
+        ...formData,
         location: {
-          ...eventData.location,
-          country: eventData.location.country || 'India'
+          ...formData.location,
+          country: formData.location.country || 'India'
         },
         travelAllowance: {
-          ...eventData.travelAllowance,
-          amount: Number(eventData.travelAllowance.amount) || 0
+          ...formData.travelAllowance,
+          amount: Number(formData.travelAllowance.amount) || 0
         }
       };
 
@@ -141,24 +89,33 @@ const EventForm = () => {
       if (response.data) {
         alert('Event created successfully!');
         // Reset form
-        setEventData({
+        setFormData({
           title: '',
-          eventType: '',
           description: '',
+          eventType: '',
+          sport: '',
+          level: '',
+          ageGroup: {
+            min: '',
+            max: ''
+          },
           date: '',
           endDate: '',
           location: {
             venue: '',
             city: '',
             state: '',
-            country: 'India'
+            country: ''
           },
-          sport: '',
-          level: 'district',
           travelAllowance: {
-            amount: '',
-            type: 'fixed'
-          }
+            provided: false,
+            amount: {
+              min: '',
+              max: ''
+            },
+            details: ''
+          },
+          eventBanner: ''
         });
       }
     } catch (error) {
@@ -168,49 +125,66 @@ const EventForm = () => {
   };
 
   return (
-    <div style={styles.container}>
-      <h2>Create New Event</h2>
-      <form onSubmit={handleSubmit}>
-        {/* Basic Details Section */}
-        <div style={styles.section}>
-          <h3 style={styles.sectionTitle}>Basic Details</h3>
-          
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Event Title</label>
-            <input
-              type="text"
-              name="title"
-              value={eventData.title}
-              onChange={handleChange}
-              style={styles.input}
-              required
-            />
-          </div>
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <h2 className="text-2xl font-bold text-gray-900 mb-6">Create New Event</h2>
+      
+      {/* Basic Details */}
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Event Title
+          </label>
+          <input
+            type="text"
+            name="title"
+            value={formData.title}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+        </div>
 
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Event Type</label>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Description
+          </label>
+          <textarea
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]"
+            required
+          />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Event Type
+            </label>
             <select
               name="eventType"
-              value={eventData.eventType}
+              value={formData.eventType}
               onChange={handleChange}
-              style={styles.input}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             >
-              <option value="">Select Event Type</option>
+              <option value="">Select Type</option>
               <option value="tournament">Tournament</option>
-              <option value="championship">Championship</option>
               <option value="training">Training Camp</option>
               <option value="competition">Competition</option>
             </select>
           </div>
 
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Sport</label>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Sport
+            </label>
             <select
               name="sport"
-              value={eventData.sport}
+              value={formData.sport}
               onChange={handleChange}
-              style={styles.input}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             >
               <option value="">Select Sport</option>
@@ -218,146 +192,213 @@ const EventForm = () => {
               <option value="football">Football</option>
               <option value="basketball">Basketball</option>
               <option value="athletics">Athletics</option>
-              <option value="swimming">Swimming</option>
-              <option value="tennis">Tennis</option>
             </select>
           </div>
 
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Level</label>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Level
+            </label>
             <select
               name="level"
-              value={eventData.level}
+              value={formData.level}
               onChange={handleChange}
-              style={styles.input}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             >
+              <option value="">Select Level</option>
               <option value="district">District</option>
               <option value="state">State</option>
               <option value="national">National</option>
               <option value="international">International</option>
             </select>
           </div>
+        </div>
 
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Description</label>
-            <textarea
-              name="description"
-              value={eventData.description}
+        {/* Date Range */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Start Date
+            </label>
+            <input
+              type="date"
+              name="date"
+              value={formData.date}
               onChange={handleChange}
-              style={styles.textarea}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              End Date
+            </label>
+            <input
+              type="date"
+              name="endDate"
+              value={formData.endDate}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
         </div>
 
-        {/* Date and Venue Section */}
-        <div style={styles.section}>
-          <h3 style={styles.sectionTitle}>Date and Venue</h3>
-          
-          <div style={styles.formRow}>
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Start Date</label>
+        {/* Location */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-medium text-gray-900">Location Details</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Venue
+              </label>
               <input
-                type="date"
-                name="date"
-                value={eventData.date}
+                type="text"
+                name="location.venue"
+                value={formData.location.venue}
                 onChange={handleChange}
-                style={styles.input}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
-
-            <div style={styles.formGroup}>
-              <label style={styles.label}>End Date</label>
-              <input
-                type="date"
-                name="endDate"
-                value={eventData.endDate}
-                onChange={handleChange}
-                style={styles.input}
-                required
-              />
-            </div>
-          </div>
-
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Venue</label>
-            <input
-              type="text"
-              name="location.venue"
-              value={eventData.location.venue || ''}
-              onChange={handleChange}
-              style={styles.input}
-              required
-              placeholder="Enter venue name"
-            />
-          </div>
-
-          <div style={styles.formRow}>
-            <div style={styles.formGroup}>
-              <label style={styles.label}>City</label>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                City
+              </label>
               <input
                 type="text"
                 name="location.city"
-                value={eventData.location.city}
+                value={formData.location.city}
                 onChange={handleChange}
-                style={styles.input}
-                required
-              />
-            </div>
-
-            <div style={styles.formGroup}>
-              <label style={styles.label}>State</label>
-              <input
-                type="text"
-                name="location.state"
-                value={eventData.location.state}
-                onChange={handleChange}
-                style={styles.input}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
           </div>
-
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Country</label>
-            <input
-              type="text"
-              name="location.country"
-              value={eventData.location.country}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              State
+            </label>
+            <select
+              name="location.state"
+              value={formData.location.state}
               onChange={handleChange}
-              style={styles.input}
-              placeholder="India"
-            />
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            >
+              <option value="">Select State</option>
+              <option value="Andhra Pradesh">Andhra Pradesh</option>
+              <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+              <option value="Assam">Assam</option>
+              <option value="Bihar">Bihar</option>
+              <option value="Chhattisgarh">Chhattisgarh</option>
+              <option value="Goa">Goa</option>
+              <option value="Gujarat">Gujarat</option>
+              <option value="Haryana">Haryana</option>
+              <option value="Himachal Pradesh">Himachal Pradesh</option>
+              <option value="Jharkhand">Jharkhand</option>
+              <option value="Karnataka">Karnataka</option>
+              <option value="Kerala">Kerala</option>
+              <option value="Madhya Pradesh">Madhya Pradesh</option>
+              <option value="Maharashtra">Maharashtra</option>
+              <option value="Manipur">Manipur</option>
+              <option value="Meghalaya">Meghalaya</option>
+              <option value="Mizoram">Mizoram</option>
+              <option value="Nagaland">Nagaland</option>
+              <option value="Odisha">Odisha</option>
+              <option value="Punjab">Punjab</option>
+              <option value="Rajasthan">Rajasthan</option>
+              <option value="Sikkim">Sikkim</option>
+              <option value="Tamil Nadu">Tamil Nadu</option>
+              <option value="Telangana">Telangana</option>
+              <option value="Tripura">Tripura</option>
+              <option value="Uttar Pradesh">Uttar Pradesh</option>
+              <option value="Uttarakhand">Uttarakhand</option>
+              <option value="West Bengal">West Bengal</option>
+            </select>
           </div>
         </div>
 
-        {/* Travel Allowance Section
-        <div style={styles.section}>
-          <h3 style={styles.sectionTitle}>Travel Allowance</h3>
-          
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Amount (₹)</label>
+        {/* Travel Allowance */}
+        <div className="space-y-4">
+          <div className="flex items-center">
             <input
-              type="text"
-              name="travelAllowance.amount"
-              value={eventData.travelAllowance.amount}
+              type="checkbox"
+              name="travelAllowance.provided"
+              checked={formData.travelAllowance.provided}
               onChange={handleChange}
-              style={styles.input}
-              placeholder="Enter amount in rupees"
-              inputMode="numeric"
-              pattern="[0-9]*"
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
             />
+            <label className="ml-2 block text-sm text-gray-900">
+              Provide Travel Allowance
+            </label>
           </div>
-        </div> */}
 
-        <button type="submit" style={styles.button}>
+          {formData.travelAllowance.provided && (
+            <div className="pl-6 space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Min Amount
+                  </label>
+                  <input
+                    type="number"
+                    name="travelAllowance.amount.min"
+                    value={formData.travelAllowance.amount.min}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Max Amount
+                  </label>
+                  <input
+                    type="number"
+                    name="travelAllowance.amount.max"
+                    value={formData.travelAllowance.amount.max}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Travel Allowance Details
+                </label>
+                <textarea
+                  name="travelAllowance.details"
+                  value={formData.travelAllowance.details}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Specify travel allowance terms and conditions"
+                />
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Form Actions */}
+      <div className="flex justify-end gap-4 pt-6">
+        <button
+          type="button"
+          onClick={onClose}
+          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        >
           Create Event
         </button>
-      </form>
-    </div>
+      </div>
+    </form>
   );
 };
 
-export default EventForm; 
+export default EventForm;

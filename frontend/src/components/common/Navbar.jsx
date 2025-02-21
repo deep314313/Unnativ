@@ -24,140 +24,46 @@ const Navbar = () => {
     navigate('/');
   };
 
-  const styles = {
-    navStyle: {
-      backgroundColor: 'rgba(255, 255, 255, 0.95)',
-      padding: '1rem',
-      color: '#333',
-      position: 'sticky',
-      top: 0,
-      zIndex: 1000,
-      boxShadow: '0 2px 15px rgba(0,0,0,0.1)'
-    },
-    navContentStyle: {
-      maxWidth: '1200px',
-      margin: '0 auto',
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      padding: '0 20px'
-    },
-    logoStyle: {
-      color: '#FF6B6B',
-      textDecoration: 'none',
-      fontSize: '1.8rem',
-      fontWeight: 'bold',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '10px',
-      transition: 'transform 0.3s ease'
-    },
-    loginButton: {
-      padding: '8px 20px',
-      backgroundColor: '#FF6B6B',
-      color: 'white',
-      border: 'none',
-      borderRadius: '25px',
-      cursor: 'pointer',
-      fontSize: '1.1rem',
-      transition: 'all 0.3s ease'
-    },
-    dropdownContainer: {
-      position: 'relative'
-    },
-    dropdownMenu: {
-      position: 'absolute',
-      top: '100%',
-      right: 0,
-      backgroundColor: 'white',
-      borderRadius: '8px',
-      boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-      padding: '8px 0',
-      marginTop: '8px',
-      minWidth: '200px',
-      display: showLoginOptions ? 'block' : 'none'
-    },
-    dropdownItem: {
-      display: 'block',
-      padding: '10px 20px',
-      color: '#333',
-      textDecoration: 'none',
-      transition: 'all 0.2s ease',
-      fontSize: '1rem'
-    },
-    userButton: {
-      padding: '8px 20px',
-      backgroundColor: '#4CAF50',
-      color: 'white',
-      border: 'none',
-      borderRadius: '25px',
-      cursor: 'pointer',
-      fontSize: '1.1rem',
-      transition: 'all 0.3s ease'
-    },
-    logoutButton: {
-      padding: '8px 20px',
-      backgroundColor: '#f44336',
-      color: 'white',
-      border: 'none',
-      borderRadius: '25px',
-      cursor: 'pointer',
-      fontSize: '1.1rem',
-      marginLeft: '10px',
-      transition: 'all 0.3s ease'
-    }
-  };
-
   return (
-    <nav style={styles.navStyle}>
-      <div style={styles.navContentStyle}>
+    <nav className="sticky top-0 z-50 bg-white/95 p-4 shadow-md">
+      <div className="mx-auto max-w-7xl flex justify-between items-center px-5">
         <Link 
           to="/" 
-          style={styles.logoStyle}
-          onMouseOver={e => e.target.style.transform = 'scale(1.05)'}
-          onMouseOut={e => e.target.style.transform = 'scale(1)'}
+          className="text-[#FF6B6B] no-underline text-3xl font-bold flex items-center gap-3 transition-transform duration-300 hover:scale-105"
         >
           <span>🏆</span> Sports Connect
         </Link>
         
-        <div style={styles.dropdownContainer}>
+        <div className="relative">
           {!isLoggedIn ? (
             <>
               <button 
-                style={styles.loginButton}
+                className="px-5 py-2 bg-[#FF6B6B] text-white rounded-full cursor-pointer text-lg transition-colors duration-300 hover:bg-[#ff5252]"
                 onClick={() => setShowLoginOptions(!showLoginOptions)}
-                onMouseOver={e => e.target.style.backgroundColor = '#ff5252'}
-                onMouseOut={e => e.target.style.backgroundColor = '#FF6B6B'}
               >
                 Login
               </button>
               
               {showLoginOptions && (
-                <div style={styles.dropdownMenu}>
+                <div className="absolute top-full right-0 bg-white rounded-lg shadow-lg py-2 mt-2 min-w-[200px]">
                   <Link 
                     to="/login/organization" 
-                    style={styles.dropdownItem}
+                    className="block px-5 py-2.5 text-gray-700 hover:bg-gray-50 transition-colors duration-200"
                     onClick={() => setShowLoginOptions(false)}
-                    onMouseOver={e => e.target.style.backgroundColor = '#f8f9fa'}
-                    onMouseOut={e => e.target.style.backgroundColor = 'transparent'}
                   >
                     Organization Login
                   </Link>
                   <Link 
                     to="/login/athlete" 
-                    style={styles.dropdownItem}
+                    className="block px-5 py-2.5 text-gray-700 hover:bg-gray-50 transition-colors duration-200"
                     onClick={() => setShowLoginOptions(false)}
-                    onMouseOver={e => e.target.style.backgroundColor = '#f8f9fa'}
-                    onMouseOut={e => e.target.style.backgroundColor = 'transparent'}
                   >
                     Athlete Login
                   </Link>
                   <Link 
                     to="/login/donor" 
-                    style={styles.dropdownItem}
+                    className="block px-5 py-2.5 text-gray-700 hover:bg-gray-50 transition-colors duration-200"
                     onClick={() => setShowLoginOptions(false)}
-                    onMouseOver={e => e.target.style.backgroundColor = '#f8f9fa'}
-                    onMouseOut={e => e.target.style.backgroundColor = 'transparent'}
                   >
                     Donor Login
                   </Link>
@@ -165,20 +71,16 @@ const Navbar = () => {
               )}
             </>
           ) : (
-            <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div className="flex items-center gap-3">
               <Link
                 to={`/${userType}/dashboard`}
-                style={styles.userButton}
-                onMouseOver={e => e.target.style.backgroundColor = '#45a049'}
-                onMouseOut={e => e.target.style.backgroundColor = '#4CAF50'}
+                className="px-5 py-2 bg-green-500 text-white rounded-full cursor-pointer text-lg transition-colors duration-300 hover:bg-green-600"
               >
                 Dashboard
               </Link>
               <button
                 onClick={handleLogout}
-                style={styles.logoutButton}
-                onMouseOver={e => e.target.style.backgroundColor = '#d32f2f'}
-                onMouseOut={e => e.target.style.backgroundColor = '#f44336'}
+                className="px-5 py-2 bg-red-500 text-white rounded-full cursor-pointer text-lg transition-colors duration-300 hover:bg-red-600"
               >
                 Logout
               </button>
@@ -190,4 +92,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar; 
+export default Navbar;

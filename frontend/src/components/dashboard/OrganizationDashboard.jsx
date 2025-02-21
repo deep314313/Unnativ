@@ -12,183 +12,9 @@ const OrganizationDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [organizationData, setOrganizationData] = useState(null);
   const [eventsList, setEventsList] = useState([]);
-  const [newEvent, setNewEvent] = useState({
-    title: '',
-    description: '',
-    eventType: '',
-    sport: '',
-    level: '',
-    ageGroup: {
-      min: '',
-      max: ''
-    },
-    date: '',
-    endDate: '',
-    location: {
-      venue: '',
-      city: '',
-      state: '',
-      country: ''
-    },
-    sponsorship: {
-      title: '',
-      category: '',
-      amount: {
-        min: '',
-        max: ''
-      },
-      details: ''
-    },
-    travelAllowance: {
-      provided: false,
-      amount: {
-        min: '',
-        max: ''
-      },
-      details: ''
-    },
-    eventBanner: ''
-  });
   const [applications, setApplications] = useState([]);
-
-  const styles = {
-    container: {
-      display: 'flex',
-      minHeight: '100vh',
-      backgroundColor: '#f8fafc'
-    },
-    sidebar: {
-      width: '250px',
-      backgroundColor: 'white',
-      padding: '20px',
-      boxShadow: '2px 0 5px rgba(0,0,0,0.1)',
-      position: 'fixed',
-      height: '100vh',
-      overflowY: 'auto'
-    },
-    mainContent: {
-      flex: 1,
-      marginLeft: '250px',
-      padding: '30px',
-      maxWidth: 'calc(100% - 250px)'
-    },
-    header: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: '30px',
-      backgroundColor: 'white',
-      padding: '20px',
-      borderRadius: '8px',
-      boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-    },
-    createButton: {
-      backgroundColor: '#4CAF50',
-      color: 'white',
-      padding: '10px 20px',
-      border: 'none',
-      borderRadius: '4px',
-      cursor: 'pointer',
-      fontSize: '14px',
-      fontWeight: '500',
-      transition: 'background-color 0.3s'
-    },
-    listingCard: {
-      backgroundColor: 'white',
-      borderRadius: '8px',
-      padding: '20px',
-      marginBottom: '20px',
-      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-      border: '1px solid #eee'
-    },
-    listingHeader: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'flex-start',
-      marginBottom: '15px'
-    },
-    listingTitle: {
-      fontSize: '18px',
-      fontWeight: '600',
-      color: '#2d3748',
-      marginBottom: '8px'
-    },
-    listingDetails: {
-      color: '#4a5568',
-      fontSize: '14px'
-    },
-    listingGrid: {
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-      gap: '20px',
-      marginTop: '20px'
-    },
-    modal: {
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: 'rgba(0,0,0,0.5)',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      zIndex: 1000
-    },
-    modalContent: {
-      backgroundColor: 'white',
-      padding: '30px',
-      borderRadius: '8px',
-      width: '60%',
-      maxHeight: '80vh',
-      overflowY: 'auto',
-      position: 'relative'
-    },
-    closeButton: {
-      position: 'absolute',
-      top: '15px',
-      right: '15px',
-      border: 'none',
-      background: 'none',
-      fontSize: '24px',
-      cursor: 'pointer',
-      color: '#666'
-    },
-    sidebarItem: {
-      padding: '12px 15px',
-      marginBottom: '8px',
-      borderRadius: '8px',
-      cursor: 'pointer',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '10px',
-      transition: 'all 0.3s ease',
-      fontSize: '14px',
-      color: '#4a5568'
-    },
-    activeSidebarItem: {
-      backgroundColor: '#FF6B6B',
-      color: 'white',
-      fontWeight: '500'
-    },
-    sidebarIcon: {
-      fontSize: '18px',
-      width: '24px',
-      textAlign: 'center'
-    },
-    eventStatus: {
-      padding: '4px 8px',
-      borderRadius: '4px',
-      fontSize: '12px',
-      fontWeight: '500'
-    },
-    eventDate: {
-      color: '#718096',
-      fontSize: '14px',
-      marginBottom: '10px'
-    }
-  };
-
+  const [sponsorships, setSponsorships] = useState([]);
+  const [travelSupports, setTravelSupports] = useState([]);
   const sidebarItems = [
     { id: 'profile', label: 'Organization Profile', icon: '👤' },
     { id: 'events', label: 'Events', icon: '🎯' },
@@ -196,38 +22,6 @@ const OrganizationDashboard = () => {
     { id: 'travel', label: 'Travel Support', icon: '✈️' },
     { id: 'applications', label: 'Applications', icon: '📝' }
   ];
-
-  const handleSubmit = useCallback(async (formData) => {
-    try {
-      const response = await axios.put('/api/organizations/profile', formData);
-      setOrganizationData(response.data);
-    } catch (error) {
-      console.error('Error updating profile:', error);
-    }
-  }, []);
-
-  const handleChange = useCallback((e) => {
-    const { name, value } = e.target;
-    setOrganizationData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  }, []);
-
-  const handleImageUpload = useCallback(async (file) => {
-    try {
-      const formData = new FormData();
-      formData.append('image', file);
-      const response = await axios.post('/api/organizations/upload-image', formData);
-      setOrganizationData(prev => ({
-        ...prev,
-        imageUrl: response.data.imageUrl
-      }));
-    } catch (error) {
-      console.error('Error uploading image:', error);
-    }
-  }, []);
-
   const fetchOrganizationData = useCallback(async () => {
     try {
       const response = await axios.get('/api/organizations/profile');
@@ -257,94 +51,70 @@ const OrganizationDashboard = () => {
     }
   }, []);
 
-  const handleApplicationStatus = async (applicationId, status) => {
+  const fetchSponsorships = useCallback(async () => {
     try {
-      await axios.put(`/api/organizations/applications/${applicationId}`, 
-        { status },
-        {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        }
-      );
-      fetchApplications(); // Refresh applications
-      alert(`Application ${status} successfully`);
+      const response = await axios.get('/api/sponsorships');
+      setSponsorships(response.data);
     } catch (error) {
-      console.error('Error updating application:', error);
-      alert('Failed to update application status');
+      console.error('Error fetching sponsorships:', error);
     }
-  };
+  }, []);
 
-  const handleSubmitEvent = async (e) => {
-    e.preventDefault();
+  const fetchTravelSupports = useCallback(async () => {
     try {
-      await axios.post('/api/organizations/events', newEvent, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      fetchEvents();
-      setNewEvent({
-        title: '',
-        description: '',
-        eventType: '',
-        sport: '',
-        level: '',
-        ageGroup: {
-          min: '',
-          max: ''
-        },
-        date: '',
-        endDate: '',
-        location: {
-          venue: '',
-          city: '',
-          state: '',
-          country: ''
-        },
-        sponsorship: {
-          title: '',
-          category: '',
-          amount: {
-            min: '',
-            max: ''
-          },
-          details: ''
-        },
-        travelAllowance: {
-          provided: false,
-          amount: {
-            min: '',
-            max: ''
-          },
-          details: ''
-        },
-        eventBanner: ''
-      });
+      const response = await axios.get('/api/travel-supports');
+      setTravelSupports(response.data);
     } catch (error) {
-      console.error('Error creating event:', error);
+      console.error('Error fetching travel supports:', error);
     }
-  };
+  }, []);
 
-  const handleChangeEvent = (e) => {
-    setNewEvent({
-      ...newEvent,
-      [e.target.name]: e.target.value
-    });
-  };
+  const renderSponsorshipCard = (sponsorship) => (
+    <div key={sponsorship._id} className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow duration-200 border border-gray-200">
+      <div className="flex justify-between items-start mb-4">
+        <div>
+          <h3 className="text-lg font-semibold text-gray-800 mb-2">{sponsorship.title}</h3>
+          <p className="text-sm text-gray-600 mb-2">{sponsorship.sport}</p>
+        </div>
+        <span className={`px-3 py-1 rounded-full text-xs font-medium ${sponsorship.status === 'active' ? 'bg-green-500' : 'bg-gray-500'} text-white`}>
+          {sponsorship.status}
+        </span>
+      </div>
+      <div className="text-sm text-gray-700 space-y-2">
+        <p><span className="font-medium">Amount:</span> ₹{sponsorship.amount}</p>
+        <p className="mt-2 text-gray-600">{sponsorship.description}</p>
+      </div>
+    </div>
+  );
 
-  const handleImageUploadEvent = (e) => {
-    // Implementation for image upload
-  };
+  const renderTravelSupportCard = (support) => (
+    <div key={support._id} className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow duration-200 border border-gray-200">
+      <div className="flex justify-between items-start mb-4">
+        <div>
+          <h3 className="text-lg font-semibold text-gray-800 mb-2">{support.title}</h3>
+          <p className="text-sm text-gray-600 mb-2">
+            Valid till: {new Date(support.validTill).toLocaleDateString()}
+          </p>
+        </div>
+        <span className={`px-3 py-1 rounded-full text-xs font-medium bg-blue-500 text-white`}>
+          {support.coverageType}
+        </span>
+      </div>
+      <div className="text-sm text-gray-700 space-y-2">
+        <p><span className="font-medium">Amount Range:</span> ₹{support.amount?.min || 0} - ₹{support.amount?.max || 0}</p>
+        <p className="mt-2 text-gray-600">{support.details}</p>
+      </div>
+    </div>
+  );
 
   const renderForm = () => {
     if (!showForm) return null;
 
     return (
-      <div style={styles.modal}>
-        <div style={styles.modalContent}>
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+        <div className="bg-white rounded-lg w-3/5 max-h-[80vh] overflow-y-auto relative p-8">
           <button 
-            style={styles.closeButton}
+            className="absolute top-4 right-4 text-2xl text-gray-600 hover:text-gray-800"
             onClick={() => setShowForm(false)}
           >
             ×
@@ -358,59 +128,26 @@ const OrganizationDashboard = () => {
   };
 
   const renderEventCard = (event) => (
-    <div key={event._id} style={styles.listingCard}>
-      <div style={styles.listingHeader}>
+    <div key={event._id} className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow duration-200 border border-gray-200">
+      <div className="flex justify-between items-start mb-4">
         <div>
-          <h3 style={styles.listingTitle}>{event.title}</h3>
-          <p style={styles.eventDate}>
+          <h3 className="text-lg font-semibold text-gray-800 mb-2">{event.title}</h3>
+          <p className="text-sm text-gray-600 mb-2">
             {new Date(event.date).toLocaleDateString()} - {new Date(event.endDate).toLocaleDateString()}
           </p>
         </div>
-        <span style={{
-          ...styles.eventStatus,
-          backgroundColor: event.status === 'upcoming' ? '#48BB78' : '#F56565',
-          color: 'white'
-        }}>
+        <span className={`px-3 py-1 rounded-full text-xs font-medium ${event.status === 'upcoming' ? 'bg-green-500' : event.status === 'rejected' ? 'bg-red-500' : 'bg-orange-400'} text-white`}>
           {event.status}
         </span>
       </div>
-      <div style={styles.listingDetails}>
-        <p><strong>Sport:</strong> {event.sport}</p>
-        <p><strong>Level:</strong> {event.level}</p>
-        <p><strong>Location:</strong> {event.location.city}, {event.location.state}</p>
-        <p>{event.description}</p>
+      <div className="text-sm text-gray-700 space-y-2">
+        <p><span className="font-medium">Sport:</span> {event.sport}</p>
+        <p><span className="font-medium">Level:</span> {event.level}</p>
+        <p><span className="font-medium">Location:</span> {event.location.city}, {event.location.state}</p>
+        <p className="mt-2 text-gray-600">{event.description}</p>
       </div>
     </div>
   );
-
-  const renderContent = () => {
-    if (loading) return <div>Loading...</div>;
-
-    return (
-      <>
-        <div style={styles.header}>
-          <h2>{activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}</h2>
-          {activeTab !== 'profile' && activeTab !== 'applications' && (
-            <button 
-              style={styles.createButton}
-              onClick={() => setShowForm(true)}
-            >
-              Create New
-            </button>
-          )}
-        </div>
-
-        {activeTab === 'profile' && <OrganizationProfile />}
-        {activeTab === 'applications' && <ApplicationManager />}
-        {activeTab === 'events' && (
-          <div style={styles.listingGrid}>
-            {eventsList.map(event => renderEventCard(event))}
-          </div>
-        )}
-        {/* Add similar sections for sponsorships and travel support */}
-      </>
-    );
-  };
 
   useEffect(() => {
     const loadInitialData = async () => {
@@ -424,33 +161,103 @@ const OrganizationDashboard = () => {
       fetchEvents();
     } else if (activeTab === 'applications') {
       fetchApplications();
+    } else if (activeTab === 'sponsorships') {
+      fetchSponsorships();
+    } else if (activeTab === 'travel') {
+      fetchTravelSupports();
     }
-  }, [activeTab]);
+  }, [activeTab, fetchEvents, fetchApplications, fetchSponsorships, fetchTravelSupports]);
 
   return (
-    <div style={styles.container}>
-      {/* Sidebar */}
-      <div style={styles.sidebar}>
-        <h2 style={{ marginBottom: '20px' }}>Dashboard</h2>
-        {sidebarItems.map(item => (
-          <div
-            key={item.id}
-            style={{
-              ...styles.sidebarItem,
-              ...(activeTab === item.id ? styles.activeSidebarItem : {})
-            }}
-            onClick={() => setActiveTab(item.id)}
-          >
-            <span style={styles.sidebarIcon}>{item.icon}</span>
-            {item.label}
+    <div className="min-h-screen bg-gray-50">
+      {/* Top Navigation Bar */}
+      <nav className="bg-white shadow-md fixed w-full z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between h-16">
+            <div className="flex items-center">
+              <span className="text-2xl font-bold text-gray-800">Sports Connect</span>
+            </div>
+            <div className="flex items-center space-x-4">
+              <span className="text-gray-600">Welcome, Organization</span>
+              <button className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
+              </button>
+            </div>
           </div>
-        ))}
-      </div>
+        </div>
+      </nav>
+
+      {/* Sidebar */}
+      <aside className="fixed left-0 top-16 w-64 h-[calc(100vh-4rem)] bg-white shadow-lg z-10 overflow-y-auto">
+        <div className="p-4 space-y-2">
+          {sidebarItems.map(item => (
+            <button
+              key={item.id}
+              onClick={() => setActiveTab(item.id)}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${activeTab === item.id ? 'bg-blue-500 text-white shadow-md' : 'text-gray-600 hover:bg-gray-50'}`}
+            >
+              <span className="text-xl">{item.icon}</span>
+              <span className="font-medium">{item.label}</span>
+            </button>
+          ))}
+        </div>
+      </aside>
 
       {/* Main Content */}
-      <div style={styles.mainContent}>
-        {renderContent()}
-      </div>
+      <main className="ml-64 pt-16 min-h-screen">
+        <div className="p-8 max-w-7xl mx-auto">
+          {/* Page Header */}
+          <div className="mb-8 bg-white rounded-xl shadow-sm p-6">
+            <div className="flex justify-between items-center">
+              <h1 className="text-2xl font-bold text-gray-800">
+                {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+              </h1>
+              {activeTab !== 'profile' && activeTab !== 'applications' && (
+                <button
+                  onClick={() => setShowForm(true)}
+                  className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors duration-200 shadow-sm"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+                  </svg>
+                  Create New
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Content Area */}
+          <div className="space-y-6">
+            {loading ? (
+              <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+              </div>
+            ) : (
+              <>
+                {activeTab === 'profile' && <OrganizationProfile />}
+                {activeTab === 'applications' && <ApplicationManager />}
+                {activeTab === 'events' && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {eventsList.map(event => renderEventCard(event))}
+                  </div>
+                )}
+                {activeTab === 'sponsorships' && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {sponsorships.map(sponsorship => renderSponsorshipCard(sponsorship))}
+                  </div>
+                )}
+                {activeTab === 'travel' && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {travelSupports.map(support => renderTravelSupportCard(support))}
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      </main>
 
       {/* Modal Form */}
       {renderForm()}
@@ -458,4 +265,4 @@ const OrganizationDashboard = () => {
   );
 };
 
-export default OrganizationDashboard; 
+export default OrganizationDashboard;

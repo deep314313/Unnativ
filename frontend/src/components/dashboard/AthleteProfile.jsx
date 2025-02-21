@@ -32,139 +32,7 @@ const AthleteProfile = () => {
     videos: []
   });
 
-  const styles = {
-    container: {
-      maxWidth: '800px',
-      margin: '0 auto',
-      padding: '20px'
-    },
-    header: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: '20px'
-    },
-    profileSection: {
-      backgroundColor: 'white',
-      borderRadius: '8px',
-      padding: '20px',
-      marginBottom: '20px',
-      boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-    },
-    mediaGrid: {
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-      gap: '20px',
-      marginTop: '20px'
-    },
-    mediaItem: {
-      position: 'relative',
-      borderRadius: '8px',
-      overflow: 'hidden'
-    },
-    mediaImage: {
-      width: '100%',
-      height: '200px',
-      objectFit: 'cover'
-    },
-    mediaVideo: {
-      width: '100%',
-      height: '200px'
-    },
-    mediaPreview: {
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))',
-      gap: '15px',
-      marginTop: '20px'
-    },
-    previewItem: {
-      position: 'relative',
-      borderRadius: '8px',
-      overflow: 'hidden',
-      aspectRatio: '1',
-    },
-    previewImage: {
-      width: '100%',
-      height: '100%',
-      objectFit: 'cover'
-    },
-    previewVideo: {
-      width: '100%',
-      height: '100%',
-      objectFit: 'cover'
-    },
-    removeButton: {
-      position: 'absolute',
-      top: '5px',
-      right: '5px',
-      backgroundColor: 'rgba(255, 0, 0, 0.7)',
-      color: 'white',
-      border: 'none',
-      borderRadius: '50%',
-      width: '25px',
-      height: '25px',
-      cursor: 'pointer',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center'
-    },
-    uploadContainer: {
-      marginTop: '20px',
-      padding: '20px',
-      border: '2px dashed #ddd',
-      borderRadius: '8px',
-      textAlign: 'center'
-    },
-    fileInput: {
-      display: 'none'
-    },
-    uploadButton: {
-      backgroundColor: '#4CAF50',
-      color: 'white',
-      padding: '10px 20px',
-      border: 'none',
-      borderRadius: '4px',
-      cursor: 'pointer',
-      marginTop: '10px'
-    },
-    editButton: {
-      backgroundColor: '#2196F3',
-      color: 'white',
-      padding: '10px 20px',
-      border: 'none',
-      borderRadius: '4px',
-      cursor: 'pointer'
-    },
-    input: {
-      width: '100%',
-      padding: '8px 12px',
-      marginBottom: '10px',
-      borderRadius: '4px',
-      border: '1px solid #ddd'
-    },
-    textarea: {
-      width: '100%',
-      padding: '8px 12px',
-      marginBottom: '10px',
-      borderRadius: '4px',
-      border: '1px solid #ddd',
-      minHeight: '100px'
-    },
-    uploadProgress: {
-      marginTop: '10px',
-      color: '#666'
-    },
-    achievementsSection: {
-      marginTop: '20px',
-      padding: '15px',
-      backgroundColor: '#f8f9fa',
-      borderRadius: '8px'
-    },
-    achievementsText: {
-      whiteSpace: 'pre-wrap',
-      lineHeight: '1.6'
-    }
-  };
+  
 
   useEffect(() => {
     fetchProfile();
@@ -274,11 +142,11 @@ const AthleteProfile = () => {
   }
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <h1>My Profile</h1>
+    <div className="max-w-4xl mx-auto p-5">
+      <div className="flex justify-between items-center mb-5">
+        <h1 className="text-2xl font-bold text-gray-800">My Profile</h1>
         <button 
-          style={styles.editButton}
+          className={`px-5 py-2 rounded-md text-white transition-colors duration-300 ${editing ? 'bg-red-500 hover:bg-red-600' : 'bg-blue-500 hover:bg-blue-600'}`}
           onClick={() => setEditing(!editing)}
         >
           {editing ? 'Cancel' : 'Edit Profile'}
@@ -286,36 +154,36 @@ const AthleteProfile = () => {
       </div>
 
       {editing ? (
-        <form onSubmit={handleSubmit} style={styles.profileSection}>
-          <div>
-            <label>Full Name</label>
+        <form onSubmit={handleSubmit} className="bg-white rounded-lg p-6 shadow-md mb-6">
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-semibold mb-2">Full Name</label>
             <input
               type="text"
               name="fullName"
               value={formData.fullName}
               onChange={handleChange}
-              style={styles.input}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
-          <div>
-            <label>Age</label>
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-semibold mb-2">Age</label>
             <input
               type="number"
               name="age"
               value={formData.age}
               onChange={handleChange}
-              style={styles.input}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
-          <div>
-            <label>Sports Category</label>
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-semibold mb-2">Sports Category</label>
             <select
               name="sportsCategory"
               value={formData.sportsCategory}
               onChange={handleChange}
-              style={styles.input}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Select Sport</option>
               <option value="cricket">Cricket</option>
@@ -326,13 +194,13 @@ const AthleteProfile = () => {
             </select>
           </div>
 
-          <div>
-            <label>Current Level</label>
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-semibold mb-2">Current Level</label>
             <select
               name="currentLevel"
               value={formData.currentLevel}
               onChange={handleChange}
-              style={styles.input}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="school">School</option>
               <option value="district">District</option>
@@ -341,116 +209,121 @@ const AthleteProfile = () => {
             </select>
           </div>
 
-          <div>
-            <label>Contact Number</label>
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-semibold mb-2">Contact Number</label>
             <input
               type="tel"
               name="contactNumber"
               value={formData.contactNumber}
               onChange={handleChange}
-              style={styles.input}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
-          <div>
-            <label>Guardian Name</label>
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-semibold mb-2">Guardian Name</label>
             <input
               type="text"
               name="guardianName"
               value={formData.guardianName}
               onChange={handleChange}
-              style={styles.input}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
-          <div>
-            <label>City</label>
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-semibold mb-2">City</label>
             <input
               type="text"
               name="city"
               value={formData.city}
               onChange={handleChange}
-              style={styles.input}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
-          <div>
-            <label>State</label>
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-semibold mb-2">State</label>
             <input
               type="text"
               name="state"
               value={formData.state}
               onChange={handleChange}
-              style={styles.input}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
-          <div>
-            <label>Bio</label>
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-semibold mb-2">Bio</label>
             <textarea
               name="bio"
               value={formData.bio}
               onChange={handleChange}
-              style={styles.textarea}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px] resize-y"
               placeholder="Tell us about yourself..."
             />
           </div>
 
-          <div>
-            <label>Achievements</label>
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-semibold mb-2">Achievements</label>
             <textarea
               name="achievements"
               value={formData.achievements}
               onChange={handleChange}
-              style={styles.textarea}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px] resize-y"
               placeholder="List your achievements (e.g., Won district-level cricket tournament 2023, State champion in athletics 2022)"
             />
           </div>
 
-          <button type="submit" style={styles.uploadButton}>
+          <button type="submit" className="w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 transition-colors duration-300">
             Save Changes
           </button>
         </form>
       ) : (
-        <div style={styles.profileSection}>
-          <h2>{profile.fullName}</h2>
-          <p><strong>Age:</strong> {profile.age}</p>
-          <p><strong>Sport:</strong> {profile.sportsCategory}</p>
-          <p><strong>Level:</strong> {profile.currentLevel}</p>
-          <p><strong>Contact:</strong> {profile.contactNumber}</p>
-          <p><strong>Guardian:</strong> {profile.guardianName}</p>
-          <p><strong>Location:</strong> {profile.city}, {profile.state}</p>
-          <p><strong>Bio:</strong> {profile.bio}</p>
+        <div className="bg-white rounded-lg p-6 shadow-md mb-6">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">{profile.fullName}</h2>
+          <div className="space-y-3">
+            <p className="text-gray-700"><strong className="font-semibold">Age:</strong> {profile.age}</p>
+            <p className="text-gray-700"><strong className="font-semibold">Sport:</strong> {profile.sportsCategory}</p>
+            <p className="text-gray-700"><strong className="font-semibold">Level:</strong> {profile.currentLevel}</p>
+            <p className="text-gray-700"><strong className="font-semibold">Contact:</strong> {profile.contactNumber}</p>
+            <p className="text-gray-700"><strong className="font-semibold">Guardian:</strong> {profile.guardianName}</p>
+            <p className="text-gray-700"><strong className="font-semibold">Location:</strong> {profile.city}, {profile.state}</p>
+            <p className="text-gray-700"><strong className="font-semibold">Bio:</strong> {profile.bio}</p>
+          </div>
           
           {profile.achievements && (
-            <div style={styles.achievementsSection}>
-              <h3>Achievements</h3>
-              <p style={styles.achievementsText}>{profile.achievements}</p>
+            <div className="mt-6 bg-gray-50 rounded-lg p-4">
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">Achievements</h3>
+              <p className="text-gray-700">{profile.achievements}</p>
             </div>
           )}
         </div>
       )}
 
-      <div style={styles.profileSection}>
-        <h2>Photos & Videos</h2>
+      <div className="bg-white rounded-lg p-6 shadow-md mb-6">
+        <h2 className="text-xl font-semibold mb-4">Photos & Videos</h2>
         
-        <div style={styles.uploadContainer}>
+        <div className="mt-4 p-6 border-2 border-dashed border-gray-300 rounded-lg text-center">
           <input
             type="file"
             multiple
             accept="image/*,video/*"
             onChange={handleFileSelect}
-            style={styles.fileInput}
+            className="hidden"
             id="mediaInput"
           />
-          <label htmlFor="mediaInput" style={styles.uploadButton}>
+          <label 
+            htmlFor="mediaInput" 
+            className="inline-block px-4 py-2 bg-blue-500 text-white rounded-md cursor-pointer hover:bg-blue-600 transition-colors duration-300"
+          >
             Select Files
           </label>
           
           {(selectedFiles.photos.length > 0 || selectedFiles.videos.length > 0) && (
             <button 
               onClick={handleUpload}
-              style={styles.uploadButton}
+              className={`mt-4 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors duration-300 ${uploadingMedia ? 'opacity-50 cursor-not-allowed' : ''}`}
               disabled={uploadingMedia}
             >
               {uploadingMedia ? 'Uploading...' : 'Upload Selected Files'}
@@ -460,13 +333,13 @@ const AthleteProfile = () => {
 
         {/* Preview of selected files */}
         {(selectedFiles.photos.length > 0 || selectedFiles.videos.length > 0) && (
-          <div style={styles.mediaPreview}>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-6">
             {selectedFiles.photos.map((photo, index) => (
-              <div key={`photo-preview-${index}`} style={styles.previewItem}>
-                <img src={photo.preview} alt="" style={styles.previewImage} />
+              <div key={`photo-preview-${index}`} className="relative aspect-square rounded-lg overflow-hidden">
+                <img src={photo.preview} alt="" className="w-full h-full object-cover" />
                 <button
                   onClick={() => removeSelectedFile('photos', index)}
-                  style={styles.removeButton}
+                  className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center bg-red-500/70 text-white rounded-full hover:bg-red-600/70 transition-colors duration-300"
                 >
                   ×
                 </button>
@@ -474,11 +347,11 @@ const AthleteProfile = () => {
             ))}
             
             {selectedFiles.videos.map((video, index) => (
-              <div key={`video-preview-${index}`} style={styles.previewItem}>
-                <video src={video.preview} style={styles.previewVideo} />
+              <div key={`video-preview-${index}`} className="relative aspect-square rounded-lg overflow-hidden">
+                <video src={video.preview} className="w-full h-full object-cover" />
                 <button
                   onClick={() => removeSelectedFile('videos', index)}
-                  style={styles.removeButton}
+                  className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center bg-red-500/70 text-white rounded-full hover:bg-red-600/70 transition-colors duration-300"
                 >
                   ×
                 </button>
@@ -488,19 +361,19 @@ const AthleteProfile = () => {
         )}
 
         {/* Existing media display */}
-        <div style={styles.mediaGrid}>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-6">
           {media.photos.map((photo, index) => (
-            <div key={`photo-${index}`} style={styles.mediaItem}>
-              <img src={photo.url} alt="" style={styles.mediaImage} />
+            <div key={`photo-${index}`} className="relative aspect-square rounded-lg overflow-hidden">
+              <img src={photo.url} alt="" className="w-full h-full object-cover" />
             </div>
           ))}
           
           {media.videos.map((video, index) => (
-            <div key={`video-${index}`} style={styles.mediaItem}>
+            <div key={`video-${index}`} className="relative aspect-square rounded-lg overflow-hidden">
               <video 
                 src={video.url} 
                 controls 
-                style={styles.mediaVideo}
+                className="w-full h-full object-cover"
               />
             </div>
           ))}
@@ -510,4 +383,4 @@ const AthleteProfile = () => {
   );
 };
 
-export default AthleteProfile; 
+export default AthleteProfile;

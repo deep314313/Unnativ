@@ -14,6 +14,16 @@ router.post('/', auth, async (req, res) => {
     res.status(201).json(travelSupport);
   } catch (error) {
     console.error('Error creating travel support:', error);
+    if (error.name === 'ValidationError') {
+      const validationErrors = {};
+      for (let field in error.errors) {
+        validationErrors[field] = error.errors[field].message;
+      }
+      return res.status(400).json({
+        message: 'Validation failed',
+        errors: validationErrors
+      });
+    }
     res.status(500).json({ message: 'Server error' });
   }
 });
@@ -80,4 +90,4 @@ router.delete('/:id', auth, async (req, res) => {
   }
 });
 
-module.exports = router; 
+module.exports = router;

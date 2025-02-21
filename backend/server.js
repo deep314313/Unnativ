@@ -52,12 +52,14 @@ const athleteRoutes = require('./routes/athletes');
 const organizationRoutes = require('./routes/organizations');
 const donorRoutes = require('./routes/donors');
 const travelSupportRoutes = require('./routes/travelSupports');
+const sponsorshipRoutes = require('./routes/sponsorships');
 
 // Use routes
 app.use('/api/athletes', athleteRoutes);
 app.use('/api/organizations', organizationRoutes);
 app.use('/api/donors', donorRoutes);
 app.use('/api/travel-supports', travelSupportRoutes);
+app.use('/api/sponsorships', sponsorshipRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
