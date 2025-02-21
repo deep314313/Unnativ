@@ -5,6 +5,8 @@ const Event = require('../models/Event');
 const auth = require('../middleware/auth');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const Application = require('../models/Application');
+const Athlete = require('../models/Athlete');
 
 // Register Organization
 router.post('/register', async (req, res) => {
@@ -183,6 +185,62 @@ router.put('/profile', auth, async (req, res) => {
     res.json(organization);
   } catch (error) {
     console.error('Error updating profile:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Get all applications for an organization
+router.get('/applications', auth, async (req, res) => {
+  try {
+    // Find all events owned by this organization
+    const organizationEvents = await Event.find({ organization: req.user.id });
+    const eventIds = organizationEvents.map(event => event._id);
+
+    // Find applications for these events
+    const applications = await Application.find({
+      event: { $in: eventIds }
+    })
+    .populate('athlete', 'fullName email')
+    .populate('event', 'title')
+    .sort({ createdAt: -1 });
+
+    res.json(applications);
+  } catch (error) {
+    console.error('Error fetching applications:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Update application status
+router.put('/applications/:id', auth, async (req, res) => {
+  try {
+    const { status } = req.body;
+    const application = await Application.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true }
+    );
+    
+    res.json(application);
+  } catch (error) {
+    console.error('Error updating application:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Get athlete profile
+router.get('/athlete/:id', auth, async (req, res) => {
+  try {
+    const athlete = await Athlete.findById(req.params.id)
+      .select('-password -applications');
+    
+    if (!athlete) {
+      return res.status(404).json({ message: 'Athlete not found' });
+    }
+
+    res.json(athlete);
+  } catch (error) {
+    console.error('Error fetching athlete profile:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });

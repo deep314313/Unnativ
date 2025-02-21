@@ -4,15 +4,12 @@ import axios from '../../utils/axios';
 const SponsorshipForm = () => {
   const [sponsorshipData, setSponsorshipData] = useState({
     title: '',
-    category: '',
+    description: '',
     amount: {
       min: '',
       max: ''
     },
-    details: '',
-    sport: '',
-    level: '',
-    duration: '',
+    category: '',
     requirements: ''
   });
 
@@ -35,9 +32,24 @@ const SponsorshipForm = () => {
     },
     input: {
       width: '100%',
-      padding: '8px',
+      padding: '8px 12px',
+      borderRadius: '4px',
       border: '1px solid #ddd',
-      borderRadius: '4px'
+      fontSize: '16px',
+      '&[type="number"]': {
+        '-moz-appearance': 'textfield'
+      },
+      '&[type="number"]::-webkit-outer-spin-button, &[type="number"]::-webkit-inner-spin-button': {
+        '-webkit-appearance': 'none',
+        margin: 0
+      }
+    },
+    select: {
+      width: '100%',
+      padding: '8px 12px',
+      borderRadius: '4px',
+      border: '1px solid #ddd',
+      fontSize: '16px'
     },
     row: {
       display: 'flex',
@@ -57,28 +69,51 @@ const SponsorshipForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('/api/organizations/sponsorships', sponsorshipData, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+      await axios.post('/api/organizations/sponsorships', sponsorshipData);
+      alert('Sponsorship created successfully!');
+      // Reset form
+      setSponsorshipData({
+        title: '',
+        description: '',
+        amount: {
+          min: '',
+          max: ''
+        },
+        category: '',
+        requirements: ''
       });
-      // Reset form or show success message
     } catch (error) {
       console.error('Error creating sponsorship:', error);
+      alert('Failed to create sponsorship');
     }
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setSponsorshipData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    
+    if (name.includes('.')) {
+      const [parent, child] = name.split('.');
+      // Convert to number for amount fields
+      const finalValue = parent === 'amount' ? Number(value) || '' : value;
+      
+      setSponsorshipData(prev => ({
+        ...prev,
+        [parent]: {
+          ...prev[parent],
+          [child]: finalValue
+        }
+      }));
+    } else {
+      setSponsorshipData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
   return (
     <form style={styles.form} onSubmit={handleSubmit}>
-      <h2>Create Sponsorship Opportunity</h2>
+      <h2>Add Sponsorship</h2>
       
       <div style={styles.formGroup}>
         <label style={styles.label}>Sponsorship Title</label>
@@ -89,6 +124,7 @@ const SponsorshipForm = () => {
           onChange={handleChange}
           style={styles.input}
           required
+          placeholder="Enter sponsorship title"
         />
       </div>
 
@@ -98,14 +134,14 @@ const SponsorshipForm = () => {
           name="category"
           value={sponsorshipData.category}
           onChange={handleChange}
-          style={styles.input}
+          style={styles.select}
           required
         >
           <option value="">Select Category</option>
           <option value="full">Full Sponsorship</option>
           <option value="partial">Partial Sponsorship</option>
-          <option value="equipment">Equipment Support</option>
-          <option value="training">Training Support</option>
+          <option value="equipment">Equipment</option>
+          <option value="training">Training</option>
         </select>
       </div>
 
@@ -118,7 +154,10 @@ const SponsorshipForm = () => {
             value={sponsorshipData.amount.min}
             onChange={handleChange}
             style={styles.input}
+            min="0"
+            step="1"
             required
+            placeholder="Enter minimum amount"
           />
         </div>
         <div style={styles.formGroup}>
@@ -129,15 +168,40 @@ const SponsorshipForm = () => {
             value={sponsorshipData.amount.max}
             onChange={handleChange}
             style={styles.input}
+            min="0"
+            step="1"
             required
+            placeholder="Enter maximum amount"
           />
         </div>
       </div>
 
-      {/* Add more sponsorship-specific fields */}
-      
+      <div style={styles.formGroup}>
+        <label style={styles.label}>Description</label>
+        <textarea
+          name="description"
+          value={sponsorshipData.description}
+          onChange={handleChange}
+          style={{ ...styles.input, minHeight: '100px' }}
+          required
+          placeholder="Enter sponsorship description"
+        />
+      </div>
+
+      <div style={styles.formGroup}>
+        <label style={styles.label}>Requirements</label>
+        <textarea
+          name="requirements"
+          value={sponsorshipData.requirements}
+          onChange={handleChange}
+          style={{ ...styles.input, minHeight: '100px' }}
+          required
+          placeholder="Enter sponsorship requirements"
+        />
+      </div>
+
       <button type="submit" style={styles.submitButton}>
-        Create Sponsorship
+        Add Sponsorship
       </button>
     </form>
   );

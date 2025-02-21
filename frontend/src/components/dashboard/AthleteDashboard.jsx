@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from '../../utils/axios';
+import AthleteProfile from './AthleteProfile';
 
 const AthleteDashboard = () => {
   const [activeTab, setActiveTab] = useState('events');
@@ -7,6 +8,7 @@ const AthleteDashboard = () => {
   const [sponsorships, setSponsorships] = useState([]);
   const [travelSupports, setTravelSupports] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [myApplications, setMyApplications] = useState([]);
   
   // Filter states
   const [filters, setFilters] = useState({
@@ -59,7 +61,9 @@ const AthleteDashboard = () => {
   const tabs = [
     { id: 'events', label: 'Events', icon: '🎯' },
     { id: 'sponsorships', label: 'Sponsorships', icon: '💰' },
-    { id: 'travel', label: 'Travel Support', icon: '✈️' }
+    { id: 'travel', label: 'Travel Support', icon: '✈️' },
+    { id: 'applications', label: 'My Applications', icon: '📝' },
+    { id: 'profile', label: 'My Profile', icon: '👤' }
   ];
 
   const styles = {
@@ -201,6 +205,35 @@ const AthleteDashboard = () => {
       borderRadius: '6px',
       cursor: 'pointer',
       marginRight: '10px'
+    },
+    applicationCard: {
+      backgroundColor: 'white',
+      borderRadius: '12px',
+      padding: '20px',
+      marginBottom: '20px',
+      boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+      transition: 'transform 0.3s ease',
+      transform: 'translateY(0)'
+    },
+    applicationHeader: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: '15px'
+    },
+    status: {
+      padding: '4px 8px',
+      borderRadius: '4px',
+      fontSize: '14px',
+      fontWeight: '500'
+    },
+    applicationActions: {
+      display: 'flex',
+      gap: '10px',
+      marginTop: '10px'
+    },
+    applicationContent: {
+      marginTop: '15px'
     }
   };
 
@@ -446,6 +479,12 @@ const AthleteDashboard = () => {
           </div>
         ));
 
+      case 'applications':
+        return renderApplications();
+
+      case 'profile':
+        return <AthleteProfile />;
+
       default:
         return <div>Select a tab to view content</div>;
     }
@@ -637,6 +676,61 @@ const AthleteDashboard = () => {
       </div>
     );
   };
+
+  // Update fetchMyApplications function
+  const fetchMyApplications = useCallback(async () => {
+    try {
+      const response = await axios.get('/api/athletes/applications');
+      console.log('Applications response:', response.data); // For debugging
+      setMyApplications(response.data);
+    } catch (error) {
+      console.error('Error fetching applications:', error);
+      if (error.response) {
+        console.error('Server error:', error.response.data);
+      }
+    }
+  }, []);
+
+  // Update the applications rendering
+  const renderApplications = () => {
+    if (!myApplications || myApplications.length === 0) {
+      return <div>No applications found</div>;
+    }
+
+    return myApplications.map(app => (
+      <div key={app._id} style={styles.applicationCard}>
+        <div style={styles.applicationHeader}>
+          <h4>{app.event?.title || app.itemId?.title || 'Unknown Event'}</h4>
+          <span style={{
+            ...styles.status,
+            backgroundColor: 
+              app.status === 'accepted' ? '#4CAF50' :
+              app.status === 'rejected' ? '#f44336' :
+              '#ffa726',
+            color: 'white'
+          }}>
+            {app.status}
+          </span>
+        </div>
+        <div style={styles.applicationContent}>
+          <p><strong>Type:</strong> {app.type}</p>
+          {app.event?.organization && (
+            <p><strong>Organization:</strong> {app.event.organization.name}</p>
+          )}
+          <p><strong>Applied on:</strong> {new Date(app.createdAt).toLocaleDateString()}</p>
+          <p><strong>Message:</strong> {app.message}</p>
+          {app.requirements && (
+            <p><strong>Requirements:</strong> {app.requirements}</p>
+          )}
+        </div>
+      </div>
+    ));
+  };
+
+  // Add useEffect to fetch applications
+  useEffect(() => {
+    fetchMyApplications();
+  }, [fetchMyApplications]);
 
   return (
     <div style={styles.container}>

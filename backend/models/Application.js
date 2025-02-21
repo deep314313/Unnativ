@@ -10,19 +10,26 @@ const applicationSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Event'
   },
-  sponsorship: {
+  itemId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Sponsorship'
+    refPath: 'type'
+  },
+  type: {
+    type: String,
+    enum: ['Event', 'Sponsorship', 'TravelSupport'],
+    default: 'Event'
   },
   status: {
     type: String,
-    enum: ['pending', 'approved', 'rejected'],
+    enum: ['pending', 'accepted', 'rejected'],
     default: 'pending'
   },
   message: String,
-  organizationResponse: String
-}, {
-  timestamps: true
+  requirements: String,
+  createdAt: {
+    type: Date,
+    default: Date.now
+  }
 });
 
 module.exports = mongoose.model('Application', applicationSchema);

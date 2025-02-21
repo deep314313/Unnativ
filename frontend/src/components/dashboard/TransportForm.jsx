@@ -4,14 +4,13 @@ import axios from '../../utils/axios';
 const TransportForm = () => {
   const [transportData, setTransportData] = useState({
     title: '',
+    description: '',
     amount: {
       min: '',
       max: ''
     },
-    details: '',
-    eligibility: '',
-    mode: '',
-    coverage: ''
+    location: '',
+    requirements: ''
   });
 
   const styles = {
@@ -33,9 +32,17 @@ const TransportForm = () => {
     },
     input: {
       width: '100%',
-      padding: '8px',
+      padding: '8px 12px',
+      borderRadius: '4px',
       border: '1px solid #ddd',
-      borderRadius: '4px'
+      fontSize: '16px',
+      '&[type="number"]': {
+        '-moz-appearance': 'textfield'
+      },
+      '&[type="number"]::-webkit-outer-spin-button, &[type="number"]::-webkit-inner-spin-button': {
+        '-webkit-appearance': 'none',
+        margin: 0
+      }
     },
     row: {
       display: 'flex',
@@ -68,10 +75,24 @@ const TransportForm = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setTransportData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    
+    if (name.includes('.')) {
+      const [parent, child] = name.split('.');
+      const finalValue = parent === 'amount' ? Number(value) || '' : value;
+      
+      setTransportData(prev => ({
+        ...prev,
+        [parent]: {
+          ...prev[parent],
+          [child]: finalValue
+        }
+      }));
+    } else {
+      setTransportData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
   return (
@@ -99,7 +120,10 @@ const TransportForm = () => {
             value={transportData.amount.min}
             onChange={handleChange}
             style={styles.input}
+            min="0"
+            step="1"
             required
+            placeholder="Enter minimum amount"
           />
         </div>
         <div style={styles.formGroup}>
@@ -110,7 +134,10 @@ const TransportForm = () => {
             value={transportData.amount.max}
             onChange={handleChange}
             style={styles.input}
+            min="0"
+            step="1"
             required
+            placeholder="Enter maximum amount"
           />
         </div>
       </div>

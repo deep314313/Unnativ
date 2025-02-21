@@ -8,6 +8,19 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Sponsorship = require('../models/Sponsorship');
 const TravelSupport = require('../models/TravelSupport');
+const multer = require('multer');
+const cloudinary = require('cloudinary').v2;
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+// Configure Multer
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
 // Register Athlete
 router.post('/register', async (req, res) => {
@@ -208,17 +221,135 @@ router.post('/apply/:type/:id', auth, async (req, res) => {
 // Get athlete's applications
 router.get('/applications', auth, async (req, res) => {
   try {
-    const athlete = await Athlete.findById(req.user.id)
+    // Get athlete's applications with populated event and organization details
+    const applications = await Application.find({ athlete: req.user.id })
       .populate({
-        path: 'applications',
+        path: 'event',
+        select: 'title organization',
         populate: {
-          path: 'itemId',
-          select: 'title organization'
+          path: 'organization',
+          select: 'name'
         }
-      });
-    res.json(athlete.applications);
+      })
+      .populate('itemId', 'title') // For sponsorships/travel supports
+      .sort({ createdAt: -1 });
+
+    res.json(applications);
   } catch (error) {
     console.error('Error fetching applications:', error);
+    res.status(500).json({ 
+      message: 'Error fetching applications',
+      error: error.message 
+    });
+  }
+});
+
+// Upload media
+router.post('/media', auth, upload.array('media', 10), async (req, res) => {
+  try {
+    const uploadPromises = req.files.map(file => {
+      return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          {
+            resource_type: "auto",
+            folder: "athlete-media"
+          },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+
+        stream.end(file.buffer);
+      });
+    });
+
+    const uploadedFiles = await Promise.all(uploadPromises);
+
+    const mediaUrls = uploadedFiles.map(file => ({
+      url: file.secure_url,
+      type: file.resource_type,
+      publicId: file.public_id
+    }));
+
+    // Update athlete's media in database
+    const athlete = await Athlete.findById(req.user.id);
+    
+    mediaUrls.forEach(media => {
+      if (media.type === 'image') {
+        athlete.photos.push(media);
+      } else if (media.type === 'video') {
+        athlete.videos.push(media);
+      }
+    });
+
+    await athlete.save();
+
+    res.json({
+      photos: athlete.photos,
+      videos: athlete.videos
+    });
+  } catch (error) {
+    console.error('Error uploading media:', error);
+    res.status(500).json({ message: 'Failed to upload media' });
+  }
+});
+
+// Get athlete profile
+router.get('/profile', auth, async (req, res) => {
+  try {
+    const athlete = await Athlete.findById(req.user.id)
+      .select('-password');
+    
+    if (!athlete) {
+      return res.status(404).json({ message: 'Athlete not found' });
+    }
+
+    res.json(athlete);
+  } catch (error) {
+    console.error('Error fetching profile:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Update athlete profile
+router.put('/profile', auth, async (req, res) => {
+  try {
+    const {
+      fullName,
+      age,
+      sportsCategory,
+      currentLevel,
+      contactNumber,
+      guardianName,
+      city,
+      state,
+      bio,
+      achievements
+    } = req.body;
+
+    const athlete = await Athlete.findById(req.user.id);
+    if (!athlete) {
+      return res.status(404).json({ message: 'Athlete not found' });
+    }
+
+    // Update fields
+    athlete.fullName = fullName || athlete.fullName;
+    athlete.age = age || athlete.age;
+    athlete.sportsCategory = sportsCategory || athlete.sportsCategory;
+    athlete.currentLevel = currentLevel || athlete.currentLevel;
+    athlete.contactNumber = contactNumber || athlete.contactNumber;
+    athlete.guardianName = guardianName || athlete.guardianName;
+    athlete.city = city || athlete.city;
+    athlete.state = state || athlete.state;
+    athlete.bio = bio || athlete.bio;
+    athlete.achievements = achievements || athlete.achievements;
+
+    await athlete.save();
+
+    res.json(athlete);
+  } catch (error) {
+    console.error('Error updating profile:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });

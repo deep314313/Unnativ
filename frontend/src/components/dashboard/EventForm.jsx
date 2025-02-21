@@ -333,7 +333,7 @@ const EventForm = () => {
           </div>
         </div>
 
-        {/* Travel Allowance Section */}
+        {/* Travel Allowance Section
         <div style={styles.section}>
           <h3 style={styles.sectionTitle}>Travel Allowance</h3>
           
@@ -350,7 +350,7 @@ const EventForm = () => {
               pattern="[0-9]*"
             />
           </div>
-        </div>
+        </div> */}
 
         <button type="submit" style={styles.button}>
           Create Event

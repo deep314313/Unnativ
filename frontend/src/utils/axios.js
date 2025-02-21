@@ -2,6 +2,7 @@ import axios from 'axios';
 
 const instance = axios.create({
   baseURL: 'http://localhost:5001',
+  timeout: 10000,
   headers: {
     'Content-Type': 'application/json'
   }
@@ -25,6 +26,9 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
   (response) => response,
   (error) => {
+    if (error.code === 'ERR_INSUFFICIENT_RESOURCES') {
+      console.error('Server resource limit reached');
+    }
     if (error.response?.status === 401) {
       // Handle token expiration
       localStorage.removeItem('token');

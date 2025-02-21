@@ -14,18 +14,25 @@ app.use(cors({
 app.use(express.json());
 app.use(morgan('dev'));
 
-// MongoDB Connection
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 5000,
-  socketTimeoutMS: 45000,
-})
-.then(() => console.log('Connected to MongoDB Atlas'))
-.catch(err => {
-  console.error('MongoDB connection error:', err);
-  process.exit(1);
-});
+const connectWithRetry = () => {
+  mongoose.connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    serverSelectionTimeoutMS: 5000,
+    socketTimeoutMS: 45000,
+  })
+  .then(() => {
+    console.log('Connected to MongoDB Atlas');
+  })
+  .catch(err => {
+    console.error('MongoDB connection error:', err);
+    console.log('Retrying connection in 5 seconds...');
+    setTimeout(connectWithRetry, 5000);
+  });
+};
+
+// Initial connection
+connectWithRetry();
 
 // Add error handler for MongoDB connection
 mongoose.connection.on('error', err => {
@@ -54,8 +61,11 @@ app.use('/api/travel-supports', travelSupportRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ message: err.message || 'Something went wrong!' });
+  console.error('Unhandled error:', err);
+  res.status(500).json({
+    message: 'Internal server error',
+    error: process.env.NODE_ENV === 'development' ? err.message : undefined
+  });
 });
 
 const PORT = process.env.PORT || 5001;

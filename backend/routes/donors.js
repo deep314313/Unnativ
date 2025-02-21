@@ -4,38 +4,129 @@ const Donor = require('../models/Donor');
 const auth = require('../middleware/auth');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const Athlete = require('../models/Athlete');
+const Donation = require('../models/Donation');
+const mongoose = require('mongoose');
+
+router.use((req, res, next) => {
+  if (!mongoose.connection.readyState) {
+    return res.status(500).json({ message: 'Database connection not ready' });
+  }
+  next();
+});
 
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password, organization, contactNumber, preferredSports } = req.body;
+    console.log('Received registration data:', req.body);
     
-    let donor = await Donor.findOne({ email });
-    if (donor) {
-      return res.status(400).json({ message: 'Donor already exists' });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 12);
-
-    donor = new Donor({
-      name,
-      email,
-      password: hashedPassword,
-      organization,
+    const { 
+      email, 
+      password, 
+      fullName,
+      donorType,
       contactNumber,
-      preferredSports: preferredSports.split(',').map(sport => sport.trim())
+      panNumber,
+      organization,
+      city,
+      state 
+    } = req.body;
+
+    // Log all fields after destructuring
+    console.log('Destructured data:', {
+      email,
+      fullName,
+      donorType,
+      contactNumber,
+      panNumber,
+      organization,
+      city,
+      state
     });
 
-    await donor.save();
+    // Check if donor already exists
+    const existingDonor = await Donor.findOne({ email: email.toLowerCase() });
+    if (existingDonor) {
+      console.log('Donor already exists with email:', email);
+      return res.status(400).json({ message: 'Email already registered' });
+    }
 
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    // Create new donor
+    const donor = new Donor({
+      fullName: fullName.trim(),
+      email: email.toLowerCase().trim(),
+      password: hashedPassword,
+      donorType: donorType || 'individual',
+      organization: organization ? organization.trim() : '',
+      contactNumber: contactNumber.trim(),
+      panNumber: panNumber.trim(),
+      city: city.trim(),
+      state: state.trim()
+    });
+
+    console.log('Attempting to save donor:', donor.toObject());
+
+    await donor.save();
+    console.log('Donor saved successfully with ID:', donor._id);
+
+    // Create JWT token
     const token = jwt.sign(
-      { id: donor._id, type: 'donor' },
+      { 
+        id: donor._id, 
+        type: 'donor',
+        name: donor.fullName,
+        email: donor.email 
+      },
       process.env.JWT_SECRET,
       { expiresIn: '1d' }
     );
 
-    res.status(201).json({ token });
+    // Send response
+    const response = {
+      token,
+      donor: {
+        id: donor._id,
+        fullName: donor.fullName,
+        email: donor.email,
+        donorType: donor.donorType,
+        organization: donor.organization,
+        city: donor.city,
+        state: donor.state
+      }
+    };
+
+    console.log('Sending response:', response);
+    res.status(201).json(response);
+
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    console.error('Donor registration error:', error);
+    
+    // Check for MongoDB validation errors
+    if (error.name === 'ValidationError') {
+      const validationErrors = {};
+      for (let field in error.errors) {
+        validationErrors[field] = error.errors[field].message;
+      }
+      return res.status(400).json({
+        message: 'Validation failed',
+        details: validationErrors
+      });
+    }
+
+    // Check for MongoDB duplicate key error
+    if (error.code === 11000) {
+      return res.status(400).json({
+        message: 'Email already registered',
+        field: 'email'
+      });
+    }
+
+    res.status(500).json({ 
+      message: 'Registration failed',
+      error: error.message 
+    });
   }
 });
 
@@ -73,6 +164,93 @@ router.post('/login', async (req, res) => {
     });
   } catch (error) {
     console.error('Login error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Get all athletes with filters
+router.get('/athletes', async (req, res) => {
+  try {
+    const { name, location, age, sport, gender } = req.query;
+    
+    let query = {};
+    
+    if (name) {
+      query.fullName = { $regex: name, $options: 'i' };
+    }
+    if (location) {
+      query.$or = [
+        { city: { $regex: location, $options: 'i' } },
+        { state: { $regex: location, $options: 'i' } }
+      ];
+    }
+    if (age) {
+      query.age = age;
+    }
+    if (sport) {
+      query.sportsCategory = sport;
+    }
+    if (gender) {
+      query.gender = gender;
+    }
+
+    const athletes = await Athlete.find(query)
+      .select('fullName age sportsCategory currentLevel city state achievements gender')
+      .sort({ fullName: 1 });
+
+    // Ensure achievements is always an array
+    const athletesWithAchievements = athletes.map(athlete => ({
+      ...athlete.toObject(),
+      achievements: athlete.achievements || []
+    }));
+
+    res.json(athletesWithAchievements);
+  } catch (error) {
+    console.error('Error fetching athletes:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Make a donation
+router.post('/donate/:athleteId', auth, async (req, res) => {
+  try {
+    const { amount } = req.body;
+    const athleteId = req.params.athleteId;
+
+    const donation = new Donation({
+      donor: req.user.id,
+      athlete: athleteId,
+      amount,
+      status: 'completed'
+    });
+
+    await donation.save();
+
+    // Update athlete's total donations
+    await Athlete.findByIdAndUpdate(athleteId, {
+      $inc: { totalDonations: amount }
+    });
+
+    res.status(201).json(donation);
+  } catch (error) {
+    console.error('Error processing donation:', error);
+    res.status(500).json({ message: 'Failed to process donation' });
+  }
+});
+
+// Get athlete profile
+router.get('/athlete/:id', auth, async (req, res) => {
+  try {
+    const athlete = await Athlete.findById(req.params.id)
+      .select('-password -applications');
+    
+    if (!athlete) {
+      return res.status(404).json({ message: 'Athlete not found' });
+    }
+
+    res.json(athlete);
+  } catch (error) {
+    console.error('Error fetching athlete profile:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });

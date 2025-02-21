@@ -49,7 +49,19 @@ const athleteSchema = new mongoose.Schema({
   applications: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Application'
-  }]
+  }],
+  photos: [{
+    url: String,
+    publicId: String
+  }],
+  videos: [{
+    url: String,
+    publicId: String
+  }],
+  bio: {
+    type: String,
+    trim: true
+  }
 }, {
   timestamps: true
 });

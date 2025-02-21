@@ -7,7 +7,8 @@ import OrganizationProfile from './OrganizationProfile';
 import ApplicationManager from './ApplicationManager';
 
 const OrganizationDashboard = () => {
-  const [activeTab, setActiveTab] = useState('profile');
+  const [activeTab, setActiveTab] = useState('events');
+  const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(true);
   const [organizationData, setOrganizationData] = useState(null);
   const [eventsList, setEventsList] = useState([]);
@@ -48,11 +49,12 @@ const OrganizationDashboard = () => {
     },
     eventBanner: ''
   });
+  const [applications, setApplications] = useState([]);
 
   const styles = {
     container: {
       display: 'flex',
-      minHeight: 'calc(100vh - 64px)',
+      minHeight: '100vh',
       backgroundColor: '#f8fafc'
     },
     sidebar: {
@@ -67,134 +69,132 @@ const OrganizationDashboard = () => {
     mainContent: {
       flex: 1,
       marginLeft: '250px',
-      padding: '30px'
-    },
-    categoryItem: {
-      padding: '12px 15px',
-      marginBottom: '8px',
-      borderRadius: '8px',
-      cursor: 'pointer',
-      transition: 'all 0.3s ease'
-    },
-    activeCategoryItem: {
-      backgroundColor: '#FF6B6B',
-      color: 'white'
-    },
-    categoryIcon: {
-      marginRight: '10px',
-      fontSize: '18px'
+      padding: '30px',
+      maxWidth: 'calc(100% - 250px)'
     },
     header: {
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: '30px'
-    },
-    tabs: {
-      display: 'flex',
-      gap: '20px',
       marginBottom: '30px',
-      borderBottom: '1px solid #ddd'
-    },
-    tab: {
-      padding: '10px 20px',
-      cursor: 'pointer',
-      borderBottom: '2px solid transparent',
-      color: '#666'
-    },
-    activeTab: {
-      borderBottom: '2px solid #FF6B6B',
-      color: '#FF6B6B'
-    },
-    addButton: {
-      padding: '10px 20px',
-      backgroundColor: '#4CAF50',
-      color: 'white',
-      border: 'none',
-      borderRadius: '6px',
-      cursor: 'pointer'
-    },
-    eventGrid: {
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-      gap: '20px'
-    },
-    eventCard: {
       backgroundColor: 'white',
-      borderRadius: '8px',
       padding: '20px',
+      borderRadius: '8px',
       boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
     },
-    form: {
-      backgroundColor: 'white',
-      padding: '20px',
-      borderRadius: '8px',
-      maxWidth: '600px',
-      margin: '0 auto'
+    createButton: {
+      backgroundColor: '#4CAF50',
+      color: 'white',
+      padding: '10px 20px',
+      border: 'none',
+      borderRadius: '4px',
+      cursor: 'pointer',
+      fontSize: '14px',
+      fontWeight: '500',
+      transition: 'background-color 0.3s'
     },
-    formGroup: {
+    listingCard: {
+      backgroundColor: 'white',
+      borderRadius: '8px',
+      padding: '20px',
+      marginBottom: '20px',
+      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+      border: '1px solid #eee'
+    },
+    listingHeader: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
       marginBottom: '15px'
     },
-    label: {
-      display: 'block',
-      marginBottom: '5px',
-      color: '#444'
+    listingTitle: {
+      fontSize: '18px',
+      fontWeight: '600',
+      color: '#2d3748',
+      marginBottom: '8px'
     },
-    input: {
-      width: '100%',
-      padding: '8px',
-      border: '1px solid #ddd',
-      borderRadius: '4px'
+    listingDetails: {
+      color: '#4a5568',
+      fontSize: '14px'
     },
-    submitButton: {
-      padding: '10px 20px',
+    listingGrid: {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+      gap: '20px',
+      marginTop: '20px'
+    },
+    modal: {
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'rgba(0,0,0,0.5)',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      zIndex: 1000
+    },
+    modalContent: {
+      backgroundColor: 'white',
+      padding: '30px',
+      borderRadius: '8px',
+      width: '60%',
+      maxHeight: '80vh',
+      overflowY: 'auto',
+      position: 'relative'
+    },
+    closeButton: {
+      position: 'absolute',
+      top: '15px',
+      right: '15px',
+      border: 'none',
+      background: 'none',
+      fontSize: '24px',
+      cursor: 'pointer',
+      color: '#666'
+    },
+    sidebarItem: {
+      padding: '12px 15px',
+      marginBottom: '8px',
+      borderRadius: '8px',
+      cursor: 'pointer',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '10px',
+      transition: 'all 0.3s ease',
+      fontSize: '14px',
+      color: '#4a5568'
+    },
+    activeSidebarItem: {
       backgroundColor: '#FF6B6B',
       color: 'white',
-      border: 'none',
-      borderRadius: '6px',
-      cursor: 'pointer',
-      marginTop: '10px'
+      fontWeight: '500'
     },
-    sectionTitle: {
+    sidebarIcon: {
+      fontSize: '18px',
+      width: '24px',
+      textAlign: 'center'
+    },
+    eventStatus: {
+      padding: '4px 8px',
+      borderRadius: '4px',
+      fontSize: '12px',
+      fontWeight: '500'
+    },
+    eventDate: {
+      color: '#718096',
+      fontSize: '14px',
       marginBottom: '10px'
-    },
-    row: {
-      display: 'flex',
-      gap: '20px'
     }
   };
 
-  const categories = [
-    {
-      id: 'events',
-      name: 'Sports Events',
-      icon: '🎯',
-      description: 'Create and manage sports events'
-    },
-    {
-      id: 'sponsorships',
-      name: 'Sponsorships',
-      icon: '💰',
-      description: 'Manage sponsorship opportunities'
-    },
-    {
-      id: 'transport',
-      name: 'Transport Support',
-      icon: '🚌',
-      description: 'Manage travel allowances'
-    },
-    {
-      id: 'profile',
-      name: 'Organization Profile',
-      icon: '👤',
-      description: 'View and edit organization profile'
-    },
-    {
-      id: 'applications',
-      name: 'Applications',
-      icon: '📝',
-      description: 'Manage registration requests'
-    }
+  const sidebarItems = [
+    { id: 'profile', label: 'Organization Profile', icon: '👤' },
+    { id: 'events', label: 'Events', icon: '🎯' },
+    { id: 'sponsorships', label: 'Sponsorships', icon: '💰' },
+    { id: 'travel', label: 'Travel Support', icon: '✈️' },
+    { id: 'applications', label: 'Applications', icon: '📝' }
   ];
 
   const handleSubmit = useCallback(async (formData) => {
@@ -239,20 +239,39 @@ const OrganizationDashboard = () => {
     }
   }, []);
 
-  useEffect(() => {
-    fetchOrganizationData();
-  }, [fetchOrganizationData]);
-
-  const fetchEvents = async () => {
+  const fetchEvents = useCallback(async () => {
     try {
-      const response = await axios.get('/api/organizations/events', {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
+      const response = await axios.get('/api/organizations/events');
       setEventsList(response.data);
     } catch (error) {
       console.error('Error fetching events:', error);
+    }
+  }, []);
+
+  const fetchApplications = useCallback(async () => {
+    try {
+      const response = await axios.get('/api/organizations/applications');
+      setApplications(response.data);
+    } catch (error) {
+      console.error('Error fetching applications:', error);
+    }
+  }, []);
+
+  const handleApplicationStatus = async (applicationId, status) => {
+    try {
+      await axios.put(`/api/organizations/applications/${applicationId}`, 
+        { status },
+        {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        }
+      );
+      fetchApplications(); // Refresh applications
+      alert(`Application ${status} successfully`);
+    } catch (error) {
+      console.error('Error updating application:', error);
+      alert('Failed to update application status');
     }
   };
 
@@ -318,53 +337,112 @@ const OrganizationDashboard = () => {
     // Implementation for image upload
   };
 
-  const renderContent = () => {
-    switch (activeTab) {
-      case 'events':
-        return <EventForm />;
-      case 'sponsorships':
-        return <SponsorshipForm />;
-      case 'transport':
-        return <TransportForm />;
-      case 'profile':
-        return <OrganizationProfile />;
-      case 'applications':
-        return <ApplicationManager />;
-      default:
-        return null;
-    }
+  const renderForm = () => {
+    if (!showForm) return null;
+
+    return (
+      <div style={styles.modal}>
+        <div style={styles.modalContent}>
+          <button 
+            style={styles.closeButton}
+            onClick={() => setShowForm(false)}
+          >
+            ×
+          </button>
+          {activeTab === 'events' && <EventForm onClose={() => setShowForm(false)} />}
+          {activeTab === 'sponsorships' && <SponsorshipForm onClose={() => setShowForm(false)} />}
+          {activeTab === 'travel' && <TransportForm onClose={() => setShowForm(false)} />}
+        </div>
+      </div>
+    );
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  const renderEventCard = (event) => (
+    <div key={event._id} style={styles.listingCard}>
+      <div style={styles.listingHeader}>
+        <div>
+          <h3 style={styles.listingTitle}>{event.title}</h3>
+          <p style={styles.eventDate}>
+            {new Date(event.date).toLocaleDateString()} - {new Date(event.endDate).toLocaleDateString()}
+          </p>
+        </div>
+        <span style={{
+          ...styles.eventStatus,
+          backgroundColor: event.status === 'upcoming' ? '#48BB78' : '#F56565',
+          color: 'white'
+        }}>
+          {event.status}
+        </span>
+      </div>
+      <div style={styles.listingDetails}>
+        <p><strong>Sport:</strong> {event.sport}</p>
+        <p><strong>Level:</strong> {event.level}</p>
+        <p><strong>Location:</strong> {event.location.city}, {event.location.state}</p>
+        <p>{event.description}</p>
+      </div>
+    </div>
+  );
+
+  const renderContent = () => {
+    if (loading) return <div>Loading...</div>;
+
+    return (
+      <>
+        <div style={styles.header}>
+          <h2>{activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}</h2>
+          {activeTab !== 'profile' && activeTab !== 'applications' && (
+            <button 
+              style={styles.createButton}
+              onClick={() => setShowForm(true)}
+            >
+              Create New
+            </button>
+          )}
+        </div>
+
+        {activeTab === 'profile' && <OrganizationProfile />}
+        {activeTab === 'applications' && <ApplicationManager />}
+        {activeTab === 'events' && (
+          <div style={styles.listingGrid}>
+            {eventsList.map(event => renderEventCard(event))}
+          </div>
+        )}
+        {/* Add similar sections for sponsorships and travel support */}
+      </>
+    );
+  };
+
+  useEffect(() => {
+    const loadInitialData = async () => {
+      await fetchOrganizationData();
+    };
+    loadInitialData();
+  }, []);
+
+  useEffect(() => {
+    if (activeTab === 'events') {
+      fetchEvents();
+    } else if (activeTab === 'applications') {
+      fetchApplications();
+    }
+  }, [activeTab]);
 
   return (
     <div style={styles.container}>
       {/* Sidebar */}
       <div style={styles.sidebar}>
-        <h2 style={{ marginBottom: '20px', color: '#2d3748' }}>Dashboard</h2>
-        {categories.map(category => (
+        <h2 style={{ marginBottom: '20px' }}>Dashboard</h2>
+        {sidebarItems.map(item => (
           <div
-            key={category.id}
+            key={item.id}
             style={{
-              ...styles.categoryItem,
-              ...(activeTab === category.id ? styles.activeCategoryItem : {})
+              ...styles.sidebarItem,
+              ...(activeTab === item.id ? styles.activeSidebarItem : {})
             }}
-            onClick={() => setActiveTab(category.id)}
-            onMouseOver={(e) => {
-              if (activeTab !== category.id) {
-                e.currentTarget.style.backgroundColor = '#f7f7f7';
-              }
-            }}
-            onMouseOut={(e) => {
-              if (activeTab !== category.id) {
-                e.currentTarget.style.backgroundColor = 'transparent';
-              }
-            }}
+            onClick={() => setActiveTab(item.id)}
           >
-            <span style={styles.categoryIcon}>{category.icon}</span>
-            {category.name}
+            <span style={styles.sidebarIcon}>{item.icon}</span>
+            {item.label}
           </div>
         ))}
       </div>
@@ -373,6 +451,9 @@ const OrganizationDashboard = () => {
       <div style={styles.mainContent}>
         {renderContent()}
       </div>
+
+      {/* Modal Form */}
+      {renderForm()}
     </div>
   );
 };
