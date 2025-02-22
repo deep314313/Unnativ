@@ -32,7 +32,7 @@ const OrganizationRegister = () => {
       const response = await axios.post('/api/organizations/register', formData);
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
-        navigate('/organization/dashboard');
+        navigate('/login/organization');
       }
     } catch (error) {
       console.error('Registration failed:', error);

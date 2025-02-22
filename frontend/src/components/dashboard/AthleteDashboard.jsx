@@ -2,9 +2,11 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Calendar, Trophy, Users, Target, MapPin, Filter, Menu, Bell, LogOut } from 'lucide-react';
 import axios from '../../utils/axios';
 import AthleteProfile from './AthleteProfile';
+
 import { useAuth } from '../../context/AuthContext';
 
 const AthleteDashboard = () => {
+ // const [athleteProfile, setAthleteProfile] = useState(null);
   const { logout } = useAuth();
   const [activeTab, setActiveTab] = useState('events');
   const [events, setEvents] = useState([]);
@@ -24,6 +26,7 @@ const AthleteDashboard = () => {
       
       // Refresh applications list after successful application
       const applicationsResponse = await axios.get('/api/athletes/applications');
+      console.log("njnjnj",applicationsResponse)
       setApplications(applicationsResponse.data);
       
       // Show success message
@@ -68,7 +71,20 @@ const AthleteDashboard = () => {
       setLoading(false);
     }
   }, [activeTab]);
-
+  useEffect(() => {
+    const fetchAthleteProfile = async () => {
+      try {
+        const response = await axios.get('/api/athletes/profile');
+        console.log('jkjk',response)
+        setAthleteProfile(response.data);
+      } catch (error) {
+        console.error('Error fetching athlete profile:', error);
+      }
+    };
+  
+    fetchAthleteProfile();
+  }, []);
+  
   useEffect(() => {
     fetchData();
   }, [fetchData]);
@@ -81,7 +97,9 @@ const AthleteDashboard = () => {
           <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500" />
           <div>
             <h2 className="text-xl font-bold text-white">Athlete portal</h2>
-            <p className="text-gray-400 text-sm">Welcome back, Alex</p>
+            <p className="text-gray-400 text-sm">
+  Welcome back, {athleteProfile ? athleteProfile.fullName : 'Loading...'}
+</p>
           </div>
         </div>
 
@@ -139,7 +157,7 @@ const AthleteDashboard = () => {
             <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-rows-2 lg:grid-rows-3 gap-6">
             {activeTab === 'events' && events.map(event => (
               <div 
                 key={event._id} 
@@ -216,25 +234,38 @@ const AthleteDashboard = () => {
               </div>
             ))}
 
-            {activeTab === 'applications' && applications.map(application => (
-              <div
-                key={application._id}
-                className="bg-black/30 backdrop-blur-xl border border-gray-800 rounded-xl p-6 hover:border-gray-700 transition-all duration-300"
-              >
-                <div className="flex flex-col gap-3">
-                  <h3 className="text-lg font-semibold text-white">{application.title}</h3>
-                  <div className="flex items-center gap-2 text-gray-400">
-                    <Calendar className="w-4 h-4" />
-                    <span className="text-sm">{new Date(application.appliedDate).toLocaleDateString()}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className={`px-2 py-1 rounded-full text-xs ${application.status === 'approved' ? 'bg-green-500/20 text-green-400' : application.status === 'rejected' ? 'bg-red-500/20 text-red-400' : 'bg-yellow-500/20 text-yellow-400'}`}>
-                      {application.status.charAt(0).toUpperCase() + application.status.slice(1)}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            ))}
+{activeTab === 'applications' && applications.map(application => (
+  <div
+    key={application._id}
+    className="bg-black/30 backdrop-blur-xl border border-gray-800 rounded-xl p-6 hover:border-gray-700 transition-all duration-300"
+  >
+    <div className="flex flex-col gap-3">
+      {/* Event Title */}
+      <h3 className="text-lg font-semibold text-white">{application.itemId?.title || "No Title"}</h3>
+
+      {/* Event Description */}
+      <p className="text-sm text-gray-300">{application.itemId?.description || "No description available"}</p>
+
+      {/* Applied Date */}
+      <div className="flex items-center gap-2 text-gray-400">
+        <Calendar className="w-4 h-4" />
+        <span className="text-sm">{new Date(application.createdAt).toLocaleDateString()}</span>
+      </div>
+
+      {/* Status */}
+      <div className="flex items-center gap-2">
+        <span className={`px-2 py-1 rounded-full text-xs ${
+          application.status === 'approved' ? 'bg-green-500/20 text-green-400' :
+          application.status === 'rejected' ? 'bg-red-500/20 text-red-400' :
+          'bg-yellow-500/20 text-yellow-400'
+        }`}>
+          {application.status.charAt(0).toUpperCase() + application.status.slice(1)}
+        </span>
+      </div>
+    </div>
+  </div>
+))}
+
 
             {activeTab === 'profile' && <AthleteProfile />}
           </div>
