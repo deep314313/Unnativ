@@ -255,4 +255,18 @@ router.get('/athlete/:id', auth, async (req, res) => {
   }
 });
 
-module.exports = router; 
+// Get donor profile
+router.get('/profile', auth, async (req, res) => {
+  try {
+    const donor = await Donor.findById(req.user.id).select('-password');
+    if (!donor) {
+      return res.status(404).json({ message: 'Donor not found' });
+    }
+    res.json(donor);
+  } catch (error) {
+    console.error('Error fetching donor profile:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+module.exports = router;

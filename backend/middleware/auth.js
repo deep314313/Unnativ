@@ -9,6 +9,15 @@ module.exports = (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Check if the token's user type matches the route's user type
+    const routeUserType = req.baseUrl.split('/')[2]; // e.g., /api/organizations -> organizations
+    if (routeUserType && decoded.userType && routeUserType !== `${decoded.userType}s`) {
+      return res.status(403).json({
+        message: 'Access denied. Invalid user type for this resource'
+      });
+    }
+
     req.user = decoded;
     next();
   } catch (error) {
@@ -18,4 +27,4 @@ module.exports = (req, res, next) => {
       error: error.message 
     });
   }
-}; 
+};

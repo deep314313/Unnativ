@@ -1,15 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from '../../utils/axios';
 import { motion } from 'framer-motion';
+import { useAuth } from '../../context/AuthContext';
 
 const Login = ({ userType }) => {
   const navigate = useNavigate();
+  const { login, isAuthenticated, userType: currentUserType } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate(`/${currentUserType}/dashboard`, { replace: true });
+    }
+  }, [isAuthenticated, currentUserType, navigate]);
 
   const handleChange = (e) => {
     setFormData({
@@ -23,9 +31,12 @@ const Login = ({ userType }) => {
     try {
       const response = await axios.post(`/api/${userType.toLowerCase()}s/login`, formData);
       if (response.data.token) {
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('userType', userType.toLowerCase());
-        navigate(`/${userType.toLowerCase()}/dashboard`);
+        try {
+          await login(response.data.token, userType.toLowerCase());
+        } catch (loginError) {
+          setError(loginError.message);
+          return;
+        }
       }
     } catch (error) {
       setError(error.response?.data?.message || 'Login failed. Please try again.');
