@@ -6,7 +6,7 @@ import SponsorshipForm from './SponsorshipForm';
 import TransportForm from './TransportForm';
 import OrganizationProfile from './OrganizationProfile';
 import ApplicationManager from './ApplicationManager';
-import { Medal } from 'lucide-react';
+import { Medal, Bell } from 'lucide-react';
 
 const OrganizationDashboard = () => {
   const navigate = useNavigate();
@@ -184,43 +184,39 @@ const OrganizationDashboard = () => {
 
   return (
     <div className="min-h-screen bg-slate-900 text-white overflow-x-hidden relative">
-      {/* Background gradient circles - adjusted positioning and size */}
+      {/* Background gradient circles */}
       <div className="fixed top-0 left-0 w-[800px] h-[800px] bg-blue-500 rounded-full filter blur-3xl opacity-20 -translate-x-1/2 -translate-y-1/2" />
       <div className="fixed bottom-0 right-0 w-[800px] h-[800px] bg-purple-500 rounded-full filter blur-3xl opacity-20 translate-x-1/2 translate-y-1/2" />
 
       {/* Top Navigation Bar */}
       <nav className="bg-white/10 backdrop-blur-lg shadow-lg fixed w-full z-50 top-0">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full px-4">
           <div className="flex justify-between h-16">
+            {/* Left side - Logo */}
             <div className="flex items-center">
               <div className="flex items-center gap-3">
-                <Medal className="w-8 h-8 text-blue-600 group-hover:rotate-12 transition-transform duration-300" />
+                <Medal className="w-8 h-8 text-blue-600" />
                 <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">UnnatiVeer</span>
               </div>
             </div>
-            <div className="flex items-center space-x-4">
+
+            {/* Right side - Bell and Logout */}
+            <div className="flex items-center gap-6">
               <button className="p-2 rounded-full hover:bg-white/10 transition-colors duration-200 relative">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                </svg>
+                <Bell className="w-6 h-6 text-white" />
                 <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full"></span>
               </button>
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center text-white font-medium text-lg">
-                  {organizationData?.name?.charAt(0) || 'O'}
-                </div>
-                <button 
-                  onClick={() => {
-                    localStorage.clear();
-                    navigate('/');
-                  }}
-                  className="text-white/80 hover:text-white transition-colors duration-200"
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                  </svg>
-                </button>
-              </div>
+              <button 
+                onClick={() => {
+                  localStorage.clear();
+                  navigate('/');
+                }}
+                className="text-white/80 hover:text-white transition-colors duration-200"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+              </button>
             </div>
           </div>
         </div>
