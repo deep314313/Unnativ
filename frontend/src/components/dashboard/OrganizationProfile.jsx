@@ -83,9 +83,9 @@ const OrganizationProfile = () => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-8 max-w-4xl mx-auto">
+    <div className="bg-white/10 backdrop-blur-lg rounded-xl p-8 shadow-lg border border-white/10">
       <div className="flex justify-between items-center mb-8">
-        <h2 className="text-2xl font-bold text-gray-900">Organization Profile</h2>
+        <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">Organization Profile</h2>
         <button 
           onClick={() => {
             if (isEditing) {
@@ -94,19 +94,19 @@ const OrganizationProfile = () => {
               setIsEditing(true);
             }
           }}
-          className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${isEditing ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-green-500 text-white hover:bg-green-600'}`}
+          className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${isEditing ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:opacity-90' : 'bg-white/10 text-white hover:bg-white/20'}`}
         >
           {isEditing ? 'Save Changes' : 'Edit Profile'}
         </button>
       </div>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-600 rounded-lg">
+        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-lg">
           {error}
         </div>
       )}
       {success && (
-        <div className="mb-6 p-4 bg-green-50 border border-green-200 text-green-600 rounded-lg">
+        <div className="mb-6 p-4 bg-green-500/10 border border-green-500/20 text-green-400 rounded-lg">
           {success}
         </div>
       )}
@@ -114,84 +114,84 @@ const OrganizationProfile = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Organization Name</label>
-            <div className="text-gray-900">{profile.name}</div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">Organization Name</label>
+            <div className="text-white">{profile.name}</div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <div className="text-gray-900">{profile.email}</div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">Email</label>
+            <div className="text-white">{profile.email}</div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Registration Number</label>
-            <div className="text-gray-900">{profile.registrationNumber}</div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">Registration Number</label>
+            <div className="text-white">{profile.registrationNumber}</div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Organization Type</label>
+            <label className="block text-sm font-medium text-gray-300 mb-1">Organization Type</label>
             {isEditing ? (
               <select
                 name="organizationType"
                 value={profile.organizationType}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-200"
               >
-                <option value="">Select Type</option>
-                <option value="academy">Sports Academy</option>
-                <option value="club">Sports Club</option>
-                <option value="institute">Training Institute</option>
-                <option value="other">Other</option>
+                <option value="" className="bg-slate-800">Select Type</option>
+                <option value="academy" className="bg-slate-800">Sports Academy</option>
+                <option value="club" className="bg-slate-800">Sports Club</option>
+                <option value="institute" className="bg-slate-800">Training Institute</option>
+                <option value="other" className="bg-slate-800">Other</option>
               </select>
             ) : (
-              <div className="text-gray-900">{profile.organizationType}</div>
+              <div className="text-white">{profile.organizationType}</div>
             )}
           </div>
         </div>
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+            <label className="block text-sm font-medium text-gray-300 mb-1">Address</label>
             {isEditing ? (
               <input
                 type="text"
                 name="address"
                 value={profile.address || ''}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-200"
               />
             ) : (
-              <div className="text-gray-900">{profile.address}</div>
+              <div className="text-white">{profile.address}</div>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Contact Number</label>
+            <label className="block text-sm font-medium text-gray-300 mb-1">Contact Number</label>
             {isEditing ? (
               <input
                 type="text"
                 name="contactNumber"
                 value={profile.contactNumber || ''}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-200"
               />
             ) : (
-              <div className="text-gray-900">{profile.contactNumber}</div>
+              <div className="text-white">{profile.contactNumber}</div>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+            <label className="block text-sm font-medium text-gray-300 mb-1">Description</label>
             {isEditing ? (
               <textarea
                 name="description"
                 value={profile.description || ''}
                 onChange={handleChange}
                 rows="4"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-200"
               />
             ) : (
-              <div className="text-gray-900">{profile.description}</div>
+              <div className="text-white">{profile.description}</div>
             )}
           </div>
         </div>
@@ -204,13 +204,13 @@ const OrganizationProfile = () => {
               setIsEditing(false);
               fetchProfile();
             }}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            className="px-4 py-2 text-sm font-medium text-gray-300 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-all duration-200"
           >
             Cancel
           </button>
           <button
             onClick={handleUpdate}
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg hover:opacity-90 transition-all duration-200"
           >
             Save Changes
           </button>

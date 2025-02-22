@@ -53,6 +53,7 @@ const organizationRoutes = require('./routes/organizations');
 const donorRoutes = require('./routes/donors');
 const travelSupportRoutes = require('./routes/travelSupports');
 const sponsorshipRoutes = require('./routes/sponsorships');
+const eventRoutes = require('./routes/events');
 
 // Use routes
 app.use('/api/athletes', athleteRoutes);
@@ -60,6 +61,7 @@ app.use('/api/organizations', organizationRoutes);
 app.use('/api/donors', donorRoutes);
 app.use('/api/travel-supports', travelSupportRoutes);
 app.use('/api/sponsorships', sponsorshipRoutes);
+app.use('/api/events', eventRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from '../../utils/axios';
 
-const TransportForm = () => {
-  const [showForm, setShowForm] = useState(false);
-  const [travelSupports, setTravelSupports] = useState([]);
+const TransportForm = ({ onClose }) => {
   const [transportData, setTransportData] = useState({
     title: '',
     details: '',
@@ -14,23 +12,6 @@ const TransportForm = () => {
     coverageType: 'full',
     validTill: ''
   });
-  useEffect(() => {
-    fetchTravelSupports();
-  }, []);
-
-  const fetchTravelSupports = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('/api/travel-supports', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      setTravelSupports(response.data);
-    } catch (error) {
-      console.error('Error fetching travel supports:', error);
-    }
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -41,23 +22,14 @@ const TransportForm = () => {
           'Authorization': `Bearer ${token}`
         }
       });
-      fetchTravelSupports();
-      setTransportData({
-        title: '',
-        details: '',
-        amount: {
-          min: '',
-          max: ''
-        },
-        coverageType: 'full',
-        validTill: ''
-      });
       alert('Transport support created successfully!');
+      onClose();
     } catch (error) {
       console.error('Error creating transport support:', error);
       alert(error.response?.data?.message || 'Failed to create transport support');
     }
   };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     
@@ -78,55 +50,9 @@ const TransportForm = () => {
       }));
     }
   };
-  const renderTravelSupportCard = (support) => (
-    <div key={support._id} className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow duration-200 border border-gray-200">
-      <div className="flex justify-between items-start mb-4">
-        <div>
-          <h3 className="text-lg font-semibold text-gray-800 mb-2">{support.title}</h3>
-          <p className="text-sm text-gray-600 mb-2">
-            Valid till: {new Date(support.validTill).toLocaleDateString()}
-          </p>
-        </div>
-        <span className={`px-3 py-1 rounded-full text-xs font-medium bg-blue-500 text-white`}>
-          {support.coverageType}
-        </span>
-      </div>
-      <div className="text-sm text-gray-700 space-y-2">
-        <p><span className="font-medium">Amount Range:</span> ₹{support.amount.min} - ₹{support.amount.max}</p>
-        <p className="mt-2 text-gray-600">{support.details}</p>
-      </div>
-    </div>
-  );
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-800">Travel Support</h2>
-        <button
-          onClick={() => setShowForm(true)}
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200"
-        >
-          Add New
-        </button>
-      </div>
-
-      {!showForm ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {travelSupports.map(support => renderTravelSupportCard(support))}
-        </div>
-      ) : (
-        <form className="bg-white p-8 rounded-lg w-full max-w-3xl mx-auto" onSubmit={handleSubmit}>
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-800">Add Transport Support</h2>
-            <button
-              type="button"
-              onClick={() => setShowForm(false)}
-              className="text-gray-600 hover:text-gray-800"
-            >
-              ×
-            </button>
-          </div>
-      
+    <form className="bg-white p-8 rounded-lg w-full max-w-3xl mx-auto" onSubmit={handleSubmit}>
       <div className="mb-4">
         <label className="block text-gray-700 text-sm font-semibold mb-2">Support Title</label>
         <input
@@ -206,8 +132,6 @@ const TransportForm = () => {
         />
       </div>
 
-
-
       <button
         type="submit"
         className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
@@ -215,8 +139,6 @@ const TransportForm = () => {
         Create Transport Support
       </button>
     </form>
-      )}
-    </div>
   );
 };
 

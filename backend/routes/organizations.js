@@ -245,4 +245,16 @@ router.get('/athlete/:id', auth, async (req, res) => {
   }
 });
 
-module.exports = router; 
+// Get Organization's Sponsorships
+router.get('/sponsorships', auth, async (req, res) => {
+  try {
+    const organization = await Organization.findById(req.user.id)
+      .populate('sponsorships');
+    res.json(organization.sponsorships || []);
+  } catch (error) {
+    console.error('Error fetching sponsorships:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+module.exports = router;
