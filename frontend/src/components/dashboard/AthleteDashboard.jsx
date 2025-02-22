@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Calendar, Trophy, Users, Target, MapPin, Filter, Menu, Bell } from 'lucide-react';
+import { Calendar, Trophy, Users, Target, MapPin, Filter, Menu, Bell, LogOut } from 'lucide-react';
 import axios from '../../utils/axios';
 import AthleteProfile from './AthleteProfile';
+import { useAuth } from '../../context/AuthContext';
 
 const AthleteDashboard = () => {
+  const { logout } = useAuth();
   const [activeTab, setActiveTab] = useState('events');
   const [events, setEvents] = useState([]);
   const [sponsorships, setSponsorships] = useState([]);
@@ -83,7 +85,7 @@ const AthleteDashboard = () => {
           </div>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-2 flex-grow">
           {tabs.map(({ id, label, icon: Icon }) => (
             <button
               key={id}
@@ -98,6 +100,15 @@ const AthleteDashboard = () => {
             </button>
           ))}
         </div>
+
+        {/* Logout Button */}
+        <button
+          onClick={logout}
+          className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 w-full text-red-400 hover:bg-red-500/10 mt-auto"
+        >
+          <LogOut className="w-5 h-5" />
+          <span className="font-medium">Logout</span>
+        </button>
       </div>
 
       {/* Main Content */}
