@@ -10,6 +10,11 @@ const Navbar = () => {
   const [userType, setUserType] = useState('');
   const [isScrolled, setIsScrolled] = useState(false);
 
+  const handleLoginClick = (type) => {
+    setShowLoginOptions(false);
+    navigate(`/login/${type.toLowerCase()}`);
+  };
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     const storedUserType = localStorage.getItem('userType');
@@ -76,27 +81,49 @@ const Navbar = () => {
             <div className="flex items-center gap-3">
               {!isLoggedIn ? (
                 <>
-                  <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                    <Link
-                      to="/athletes"
-                      className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium 
-                               flex items-center gap-2 hover:bg-blue-700 transition-colors duration-200"
+                  <div className="relative">
+                    <motion.button 
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg
+                               text-base font-medium flex items-center gap-2 transition-colors duration-200"
+                      onClick={() => setShowLoginOptions(!showLoginOptions)}
                     >
-                      <Users className="w-4 h-4" />
-                      Athletes
-                    </Link>
-                  </motion.div>
-                  
-                  <motion.button 
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg
-                             text-base font-medium flex items-center gap-2 transition-colors duration-200"
-                    onClick={() => setShowLoginOptions(!showLoginOptions)}
-                  >
-                    Login
-                    <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showLoginOptions ? 'rotate-180' : ''}`} />
-                  </motion.button>
+                      Login
+                      <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showLoginOptions ? 'rotate-180' : ''}`} />
+                    </motion.button>
+
+                    <AnimatePresence>
+                      {showLoginOptions && (
+                        <motion.div
+                          initial="hidden"
+                          animate="visible"
+                          exit="hidden"
+                          variants={menuVariants}
+                          className="absolute right-0 mt-2 py-2 w-48 bg-white rounded-lg shadow-xl border border-gray-100"
+                        >
+                          <button
+                            onClick={() => handleLoginClick('Athlete')}
+                            className="w-full px-4 py-2 text-left text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
+                          >
+                            Athlete Login
+                          </button>
+                          <button
+                            onClick={() => handleLoginClick('Organization')}
+                            className="w-full px-4 py-2 text-left text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
+                          >
+                            Organization Login
+                          </button>
+                          <button
+                            onClick={() => handleLoginClick('Donor')}
+                            className="w-full px-4 py-2 text-left text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
+                          >
+                            Donor Login
+                          </button>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
                 </>
               ) : (
                 <div className="flex items-center gap-3">
