@@ -41,7 +41,7 @@ const AthleteRegister = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white relative overflow-hidden">
+    <div className="min-h-screen bg-[#0B0B1E] text-white relative overflow-hidden">
       {/* Background gradient circles */}
       <div className="absolute top-0 left-0 w-96 h-96 bg-blue-500 rounded-full filter blur-3xl opacity-20 -translate-x-1/2 -translate-y-1/2" />
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-500 rounded-full filter blur-3xl opacity-20 translate-x-1/2 translate-y-1/2" />
@@ -53,7 +53,7 @@ const AthleteRegister = () => {
           transition={{ duration: 0.8 }}
           className="max-w-2xl mx-auto"
         >
-          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 shadow-xl">
+          <div className="bg-[#0F0F2D] backdrop-blur-lg rounded-2xl p-8 shadow-xl border border-white/10">
             <motion.div
               initial={{ scale: 0.95 }}
               animate={{ scale: 1 }}
