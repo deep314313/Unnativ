@@ -11,6 +11,7 @@ import Navbar from './components/common/Navbar';
 import OrganizationDashboard from './components/dashboard/OrganizationDashboard';
 import AthleteDashboard from './components/dashboard/AthleteDashboard';
 import DonorDashboard from './components/dashboard/DonorDashboard';
+import Athletes from './components/Athletes';
 
 function App() {
   return (
@@ -36,6 +37,9 @@ function App() {
             <Route path="/organization/dashboard" element={<OrganizationDashboard />} />
             <Route path="/athlete/dashboard" element={<AthleteDashboard />} />
             <Route path="/donor/dashboard" element={<DonorDashboard />} />
+
+            {/* Athletes List Route */}
+            <Route path="/athletes" element={<Athletes />} />
           </Routes>
         </div>
       </div>

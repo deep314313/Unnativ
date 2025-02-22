@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, LogOut, LayoutDashboard, Medal } from 'lucide-react';
+import { ChevronDown, LogOut, LayoutDashboard, Medal, Users } from 'lucide-react';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -62,70 +62,68 @@ const Navbar = () => {
         </Link>
         
         <div className="relative">
-          {!isLoggedIn ? (
-            <>
-              <motion.button 
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg
-                         text-base font-medium flex items-center gap-2 transition-colors duration-200"
-                onClick={() => setShowLoginOptions(!showLoginOptions)}
+          <div className="flex items-center gap-3">
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Link
+                to="/athletes"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium 
+                         flex items-center gap-2 hover:bg-blue-700 transition-colors duration-200"
               >
-                Login
-                <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showLoginOptions ? 'rotate-180' : ''}`} />
-              </motion.button>
-              
-              <AnimatePresence>
-                {showLoginOptions && (
-                  <motion.div
-                    initial="hidden"
-                    animate="visible"
-                    exit="hidden"
-                    variants={menuVariants}
-                    transition={{ duration: 0.2 }}
-                    className="absolute top-full right-0 mt-2 w-56 bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5"
-                  >
-                    {['organization', 'athlete', 'donor'].map((type, index) => (
-                      <Link 
-                        key={type}
-                        to={`/login/${type}`}
-                        className={`flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 
-                                  transition-colors duration-150 ${index !== 0 ? 'border-t border-gray-100' : ''}`}
-                        onClick={() => setShowLoginOptions(false)}
-                      >
-                        <span className="capitalize">{type}</span>
-                        <span className="ml-auto text-gray-400">→</span>
-                      </Link>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </>
-          ) : (
+                <Users className="w-4 h-4" />
+                Athletes
+              </Link>
+            </motion.div>
             <div className="flex items-center gap-3">
-              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                <Link
-                  to={`/${userType}/dashboard`}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium 
-                           flex items-center gap-2 hover:bg-blue-700 transition-colors duration-200"
-                >
-                  <LayoutDashboard className="w-4 h-4" />
-                  Dashboard
-                </Link>
-              </motion.div>
-
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={handleLogout}
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-medium 
-                         flex items-center gap-2 hover:bg-gray-300 transition-colors duration-200"
-              >
-                <LogOut className="w-4 h-4" />
-                Logout
-              </motion.button>
+              {!isLoggedIn ? (
+                <>
+                  <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                    <Link
+                      to="/athletes"
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium 
+                               flex items-center gap-2 hover:bg-blue-700 transition-colors duration-200"
+                    >
+                      <Users className="w-4 h-4" />
+                      Athletes
+                    </Link>
+                  </motion.div>
+                  
+                  <motion.button 
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg
+                             text-base font-medium flex items-center gap-2 transition-colors duration-200"
+                    onClick={() => setShowLoginOptions(!showLoginOptions)}
+                  >
+                    Login
+                    <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showLoginOptions ? 'rotate-180' : ''}`} />
+                  </motion.button>
+                </>
+              ) : (
+                <div className="flex items-center gap-3">
+                  <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                    <Link
+                      to={`/${userType}/dashboard`}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium 
+                               flex items-center gap-2 hover:bg-blue-700 transition-colors duration-200"
+                    >
+                      <LayoutDashboard className="w-4 h-4" />
+                      Dashboard
+                    </Link>
+                  </motion.div>
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={handleLogout}
+                    className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-medium 
+                             flex items-center gap-2 hover:bg-gray-300 transition-colors duration-200"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Logout
+                  </motion.button>
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
       </div>
     </motion.nav>
