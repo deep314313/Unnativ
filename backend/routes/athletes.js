@@ -107,13 +107,22 @@ router.post('/register', async (req, res) => {
 // Apply for Event
 router.post('/apply/event/:eventId', auth, async (req, res) => {
   try {
-    const { message } = req.body;
+    const { message, requirements } = req.body;
     const eventId = req.params.eventId;
+
+    // Check if event exists
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res.status(404).json({ message: 'Event not found' });
+    }
 
     const application = new Application({
       athlete: req.user.id,
       event: eventId,
-      message
+      itemId: eventId,
+      itemType: 'Event',
+      message,
+      requirements
     });
 
     await application.save();
