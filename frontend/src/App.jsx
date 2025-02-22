@@ -17,7 +17,8 @@ function App() {
   return (
     <Router>
       <div className="app-container">
-        <Navbar />
+        {/* Only show main Navbar on non-dashboard and non-landing page routes */}
+        {!['/organization/dashboard', '/athlete/dashboard', '/donor/dashboard', '/'].includes(window.location.pathname) && <Navbar />}
         <div className="main-content">
           <Routes>
             {/* Landing Page */}

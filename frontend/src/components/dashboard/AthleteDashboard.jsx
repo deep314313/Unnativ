@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { motion } from 'framer-motion';
 import axios from '../../utils/axios';
 import AthleteProfile from './AthleteProfile';
+import AthleteNavbar from './AthleteNavbar';
+import { Calendar, Trophy, Users, Target, MapPin } from 'lucide-react';
 
 const AthleteDashboard = () => {
   const [activeTab, setActiveTab] = useState('events');
@@ -496,278 +499,90 @@ const AthleteDashboard = () => {
     fetchFilteredData();
   };
 
-  // Add this function to handle filter reset
-  const handleResetFilters = () => {
-    const resetFilters = {
-      events: { location: '', sport: '', level: '' },
-      sponsorships: { type: 'all', minAmount: '', maxAmount: '' },
-      travel: { minAmount: '', maxAmount: '', location: '' }
-    };
-    setFilters(resetFilters);
-    setAppliedFilters(resetFilters);
-    fetchData();
-  };
-
-  // Update the renderFilters function
-  const renderFilters = () => {
-    if (!showFilters) return null;
-
-    const filterContent = () => {
-      switch (activeTab) {
-        case 'events':
-          return (
-            <div style={styles.filterGroup}>
-              <input
-                type="text"
-                placeholder="Search by city"
-                style={styles.filterInput}
-                value={filters.events.location}
-                onChange={(e) => setFilters({
-                  ...filters,
-                  events: { ...filters.events, location: e.target.value }
-                })}
-              />
-              <select
-                style={styles.filterInput}
-                value={filters.events.sport}
-                onChange={(e) => setFilters({
-                  ...filters,
-                  events: { ...filters.events, sport: e.target.value }
-                })}
-              >
-                <option value="">All Sports</option>
-                <option value="cricket">Cricket</option>
-                <option value="football">Football</option>
-                <option value="basketball">Basketball</option>
-                <option value="athletics">Athletics</option>
-              </select>
-              <select
-                style={styles.filterInput}
-                value={filters.events.level}
-                onChange={(e) => setFilters({
-                  ...filters,
-                  events: { ...filters.events, level: e.target.value }
-                })}
-              >
-                <option value="">All Levels</option>
-                <option value="district">District</option>
-                <option value="state">State</option>
-                <option value="national">National</option>
-              </select>
-            </div>
-          );
-
-        case 'sponsorships':
-          return (
-            <div style={styles.filterGroup}>
-              <select
-                style={styles.filterInput}
-                value={filters.sponsorships.type}
-                onChange={(e) => setFilters({
-                  ...filters,
-                  sponsorships: { ...filters.sponsorships, type: e.target.value }
-                })}
-              >
-                <option value="all">All Types</option>
-                <option value="full">Full Sponsorship</option>
-                <option value="partial">Partial Sponsorship</option>
-              </select>
-              <input
-                type="text"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                placeholder="Min Amount"
-                style={styles.filterInput}
-                value={filters.sponsorships.minAmount}
-                onChange={(e) => {
-                  const value = e.target.value.replace(/\D/g, '');
-                  setFilters({
-                    ...filters,
-                    sponsorships: { ...filters.sponsorships, minAmount: value }
-                  });
-                }}
-              />
-              <input
-                type="text"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                placeholder="Max Amount"
-                style={styles.filterInput}
-                value={filters.sponsorships.maxAmount}
-                onChange={(e) => {
-                  const value = e.target.value.replace(/\D/g, '');
-                  setFilters({
-                    ...filters,
-                    sponsorships: { ...filters.sponsorships, maxAmount: value }
-                  });
-                }}
-              />
-            </div>
-          );
-
-        case 'travel':
-          return (
-            <div style={styles.filterGroup}>
-              <input
-                type="text"
-                placeholder="Search by location"
-                style={styles.filterInput}
-                value={filters.travel.location}
-                onChange={(e) => setFilters({
-                  ...filters,
-                  travel: { ...filters.travel, location: e.target.value }
-                })}
-              />
-              <input
-                type="text"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                placeholder="Min Amount"
-                style={styles.filterInput}
-                value={filters.travel.minAmount}
-                onChange={(e) => {
-                  const value = e.target.value.replace(/\D/g, '');
-                  setFilters({
-                    ...filters,
-                    travel: { ...filters.travel, minAmount: value }
-                  });
-                }}
-              />
-              <input
-                type="text"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                placeholder="Max Amount"
-                style={styles.filterInput}
-                value={filters.travel.maxAmount}
-                onChange={(e) => {
-                  const value = e.target.value.replace(/\D/g, '');
-                  setFilters({
-                    ...filters,
-                    travel: { ...filters.travel, maxAmount: value }
-                  });
-                }}
-              />
-            </div>
-          );
-
-        default:
-          return null;
-      }
-    };
-
-    return (
-      <div style={styles.filterSection}>
-        {filterContent()}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '15px' }}>
-          <button
-            style={styles.resetFilterButton}
-            onClick={handleResetFilters}
-          >
-            Reset Filters
-          </button>
-          <button
-            style={styles.applyFilterButton}
-            onClick={handleApplyFilters}
-          >
-            Apply Filters
-          </button>
-        </div>
-      </div>
-    );
-  };
-
-  // Update fetchMyApplications function
-  const fetchMyApplications = useCallback(async () => {
-    try {
-      const response = await axios.get('/api/athletes/applications');
-      console.log('Applications response:', response.data); // For debugging
-      setMyApplications(response.data);
-    } catch (error) {
-      console.error('Error fetching applications:', error);
-      if (error.response) {
-        console.error('Server error:', error.response.data);
-      }
-    }
-  }, []);
-
-  // Update the applications rendering
-  const renderApplications = () => {
-    if (!myApplications || myApplications.length === 0) {
-      return <div>No applications found</div>;
-    }
-
-    return myApplications.map(app => (
-      <div key={app._id} style={styles.applicationCard}>
-        <div style={styles.applicationHeader}>
-          <h4>{app.event?.title || app.itemId?.title || 'Unknown Event'}</h4>
-          <span style={{
-            ...styles.status,
-            backgroundColor: 
-              app.status === 'accepted' ? '#4CAF50' :
-              app.status === 'rejected' ? '#f44336' :
-              '#ffa726',
-            color: 'white'
-          }}>
-            {app.status}
-          </span>
-        </div>
-        <div style={styles.applicationContent}>
-          <p><strong>Type:</strong> {app.type}</p>
-          {app.event?.organization && (
-            <p><strong>Organization:</strong> {app.event.organization.name}</p>
-          )}
-          <p><strong>Applied on:</strong> {new Date(app.createdAt).toLocaleDateString()}</p>
-          <p><strong>Message:</strong> {app.message}</p>
-          {app.requirements && (
-            <p><strong>Requirements:</strong> {app.requirements}</p>
-          )}
-        </div>
-      </div>
-    ));
-  };
-
-  // Add useEffect to fetch applications
-  useEffect(() => {
-    fetchMyApplications();
-  }, [fetchMyApplications]);
-
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <h1>Welcome, Athlete!</h1>
-        <p>Find and apply for opportunities that match your needs</p>
-      </div>
+    <div className="min-h-screen bg-gray-100">
+      <AthleteNavbar />
+      <div style={styles.container}>
+        <div style={styles.tabs}>
+          {tabs.map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              style={{
+                ...styles.tab,
+                ...(activeTab === tab.id ? styles.activeTab : {})
+              }}
+            >
+              <span>{tab.icon}</span>
+              {tab.label}
+            </button>
+          ))}
+        </div>
 
-      <div style={styles.tabs}>
-        {tabs.map(tab => (
+        {/* Filter Button */}
+        {activeTab !== 'profile' && activeTab !== 'applications' && (
           <button
-            key={tab.id}
-            style={{
-              ...styles.tab,
-              ...(activeTab === tab.id ? styles.activeTab : {})
-            }}
-            onClick={() => setActiveTab(tab.id)}
+            style={styles.filterButton}
+            onClick={() => setShowFilters(!showFilters)}
           >
-            <span>{tab.icon}</span>
-            {tab.label}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+            </svg>
+            Filters
           </button>
-        ))}
+        )}
+
+        {/* Filters Section */}
+        {showFilters && (
+          <div style={styles.filterSection}>
+            {/* Add your filter inputs here based on activeTab */}
+            <div style={styles.filterGroup}>
+              {/* Filter inputs will go here */}
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <button
+                style={styles.resetFilterButton}
+                onClick={() => {
+                  setFilters({
+                    events: { location: '', sport: '', level: '' },
+                    sponsorships: { type: 'all', minAmount: '', maxAmount: '' },
+                    travel: { minAmount: '', maxAmount: '', location: '' }
+                  });
+                  setAppliedFilters({
+                    events: { location: '', sport: '', level: '' },
+                    sponsorships: { type: 'all', minAmount: '', maxAmount: '' },
+                    travel: { minAmount: '', maxAmount: '', location: '' }
+                  });
+                  fetchData();
+                }}
+              >
+                Reset Filters
+              </button>
+              <button
+                style={styles.applyFilterButton}
+                onClick={handleApplyFilters}
+              >
+                Apply Filters
+              </button>
+            </div>
+          </div>
+        )}
+
+        {renderContent()}
+        {renderApplicationModal()}
       </div>
-
-      <button 
-        style={styles.filterButton}
-        onClick={() => setShowFilters(!showFilters)}
-      >
-        <span>🔍</span>
-        {showFilters ? 'Hide Filters' : 'Show Filters'}
-      </button>
-
-      {renderFilters()}
-      {renderContent()}
-      {renderApplicationModal()}
     </div>
   );
 };
 
-export default AthleteDashboard; 
+export default AthleteDashboard;
