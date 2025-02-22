@@ -11,7 +11,11 @@ const Athlete = require('../models/Athlete');
 // Register Organization
 router.post('/register', async (req, res) => {
   try {
+<<<<<<< HEAD
     const { email, password, organizationName, organizationType, registrationNumber, foundedYear } = req.body;
+=======
+    const { email, password, organizationName, organizationType, registrationNumber,foundedYear } = req.body;
+>>>>>>> 3a5df6b18b1b2c6f24f49c0c4467ace1e2f3162f
 
     // Check if organization already exists
     const existingOrg = await Organization.findOne({ email });
