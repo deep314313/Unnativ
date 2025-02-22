@@ -42,27 +42,27 @@ const SponsorshipForm = ({ onClose }) => {
   };
 
   return (
-    <form className="bg-white p-8 rounded-lg w-full max-w-3xl mx-auto" onSubmit={handleSubmit}>
+    <form className="bg-gray-800/50 backdrop-blur-xl p-8 rounded-xl border border-white/10 w-full max-w-3xl mx-auto" onSubmit={handleSubmit}>
       <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-semibold mb-2">Sponsorship Title</label>
+        <label className="block text-gray-300 text-sm font-semibold mb-2">Sponsorship Title</label>
         <input
           type="text"
           name="title"
           value={sponsorshipData.title}
           onChange={handleChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
           required
           placeholder="Enter sponsorship title"
         />
       </div>
 
       <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-semibold mb-2">Sport Category</label>
+        <label className="block text-gray-300 text-sm font-semibold mb-2">Sport Category</label>
         <select
           name="sport"
           value={sponsorshipData.sport}
           onChange={handleChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
           required
         >
           <option value="">Select Sport</option>
@@ -74,13 +74,13 @@ const SponsorshipForm = ({ onClose }) => {
       </div>
 
       <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-semibold mb-2">Amount (₹)</label>
+        <label className="block text-gray-300 text-sm font-semibold mb-2">Amount (₹)</label>
         <input
           type="number"
           name="amount"
           value={sponsorshipData.amount}
           onChange={handleChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
           min="0"
           step="1"
           required
@@ -89,12 +89,12 @@ const SponsorshipForm = ({ onClose }) => {
       </div>
 
       <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-semibold mb-2">Description</label>
+        <label className="block text-gray-300 text-sm font-semibold mb-2">Description</label>
         <textarea
           name="description"
           value={sponsorshipData.description}
           onChange={handleChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px] resize-vertical"
+          className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400 min-h-[100px] resize-vertical"
           required
           placeholder="Enter sponsorship description"
         />

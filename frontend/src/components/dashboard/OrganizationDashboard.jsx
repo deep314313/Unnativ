@@ -56,7 +56,7 @@ const OrganizationDashboard = () => {
 
   const fetchSponsorships = useCallback(async () => {
     try {
-      const response = await axios.get('/api/sponsorships');
+      const response = await axios.get('/api/organizations/sponsorships');
       setSponsorships(response.data);
     } catch (error) {
       console.error('Error fetching sponsorships:', error);
@@ -128,10 +128,10 @@ const OrganizationDashboard = () => {
       <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start z-[100] pt-20">
         <div className="bg-white/95 backdrop-blur-sm rounded-lg w-11/12 md:w-3/5 max-h-[80vh] overflow-y-auto relative p-4">
           <button 
-            className="absolute top-2 right-2 text-2xl text-gray-600 hover:text-gray-800"
+            className="absolute top-2 right-2 text-white bg-red-500 hover:bg-red-600 px-3 py-1 rounded-md text-lg font-medium z-[101] transition-colors duration-200 flex items-center justify-center shadow-lg"
             onClick={handleFormClose}
           >
-            ×
+            Close
           </button>
           {activeTab === 'events' && <EventForm onClose={handleFormClose} />}
           {activeTab === 'sponsorships' && <SponsorshipForm onClose={handleFormClose} />}

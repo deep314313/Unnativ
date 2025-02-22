@@ -29,10 +29,11 @@ router.post('/', auth, async (req, res) => {
 });
 
 // Get all active travel supports
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
   try {
-    const travelSupports = await TravelSupport.find({ status: 'active' })
-      .populate('organization', 'name');
+    const travelSupports = await TravelSupport.find({ 
+      organization: req.user.id
+    }).populate('organization', 'name');
     res.json(travelSupports);
   } catch (error) {
     console.error('Error fetching travel supports:', error);
