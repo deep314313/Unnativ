@@ -247,6 +247,31 @@ router.get('/athlete/:id', auth, async (req, res) => {
   }
 });
 
+// Get donor's donations
+router.get('/donations', auth, async (req, res) => {
+  try {
+    const donations = await Donation.find({ donor: req.user.id })
+      .populate('athlete', 'fullName sportsCategory currentLevel')
+      .sort({ createdAt: -1 });
+
+    res.json(donations);
+  } catch (error) {
+    console.error('Error fetching donations:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Clear donor's donation history
+router.delete('/donations', auth, async (req, res) => {
+  try {
+    await Donation.deleteMany({ donor: req.user.id });
+    res.json({ message: 'Donation history cleared successfully' });
+  } catch (error) {
+    console.error('Error clearing donation history:', error);
+    res.status(500).json({ message: 'Failed to clear donation history' });
+  }
+});
+
 // Get donor profile
 router.get('/profile', auth, async (req, res) => {
   try {

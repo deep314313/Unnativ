@@ -42,9 +42,34 @@ const DonateModal = ({ isOpen, onClose, athlete }) => {
         order_id: data.orderId,
         handler: async (response) => {
           try {
-            await axios.post('/api/payments/verify-payment', response);
-            onClose();
-            alert('Payment successful! Thank you for your donation.');
+            const verificationResponse = await axios.post('/api/payments/verify-payment', response);
+            if (verificationResponse.data.message === 'Payment verified successfully') {
+              setError(null);
+              const successMessage = document.createElement('div');
+              successMessage.className = 'fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[9999]';
+              successMessage.innerHTML = `
+                <div class="bg-[#0F0F2D] p-8 rounded-xl border border-green-500/20 w-full max-w-md text-center">
+                  <div class="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <h3 class="text-2xl font-semibold text-white mb-2">Payment Successful!</h3>
+                  <p class="text-gray-400 mb-6">Thank you for your generous donation of ₹${amount} to ${athlete.fullName}</p>
+                  <button class="bg-green-500 hover:bg-green-600 text-white py-3 px-8 rounded-lg transition-colors duration-300 font-medium">Done</button>
+                </div>
+              `;
+              document.body.appendChild(successMessage);
+              
+              // Add click event to close button
+              const closeBtn = successMessage.querySelector('button');
+              closeBtn.onclick = () => {
+                document.body.removeChild(successMessage);
+                onClose();
+              };
+            } else {
+              setError('Payment verification failed');
+            }
           } catch (error) {
             setError('Payment verification failed');
           }

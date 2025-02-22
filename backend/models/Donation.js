@@ -20,10 +20,17 @@ const donationSchema = new mongoose.Schema({
     enum: ['pending', 'completed', 'failed'],
     default: 'pending'
   },
+  orderId: {
+    type: String,
+    required: true
+  },
+  paymentId: {
+    type: String
+  },
   createdAt: {
     type: Date,
     default: Date.now
   }
 });
 
-module.exports = mongoose.model('Donation', donationSchema); 
+module.exports = mongoose.model('Donation', donationSchema);
