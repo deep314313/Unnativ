@@ -22,6 +22,22 @@ cloudinary.config({
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
+// Get all athletes
+router.get('/', async (req, res) => {
+  try {
+    const athletes = await Athlete.find({}, {
+      password: 0,
+      email: 0,
+      contactNumber: 0,
+      guardianName: 0
+    });
+    res.json(athletes);
+  } catch (error) {
+    console.error('Error fetching athletes:', error);
+    res.status(500).json({ message: 'Server error while fetching athletes' });
+  }
+});
+
 // Register Athlete
 router.post('/register', async (req, res) => {
   try {
@@ -354,4 +370,4 @@ router.put('/profile', auth, async (req, res) => {
   }
 });
 
-module.exports = router; 
+module.exports = router;
