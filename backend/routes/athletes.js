@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 const Athlete = require('../models/Athlete');
 const Event = require('../models/Event');
 const Application = require('../models/Application');
@@ -210,15 +211,71 @@ router.get('/travel-supports', async (req, res) => {
 router.post('/apply/:type/:id', auth, async (req, res) => {
   try {
     const { type, id } = req.params;
-    const { message } = req.body;
+    const { message, requirements } = req.body;
 
-    const application = new Application({
+    // Map route type to model type
+    const typeMap = {
+      'event': 'Event',
+      'sponsorship': 'Sponsorship',
+      'travel': 'TravelSupport'
+    };
+
+    // Validate application type
+    if (!typeMap[type]) {
+      return res.status(400).json({ 
+        message: 'Invalid application type',
+        details: `Type must be one of: ${Object.keys(typeMap).join(', ')}`
+      });
+    }
+
+    // Validate required fields
+    if (!message) {
+      return res.status(400).json({ 
+        message: 'Application message is required',
+        field: 'message'
+      });
+    }
+
+    // Validate ID exists in corresponding model
+    const Model = mongoose.model(typeMap[type]);
+    const item = await Model.findById(id);
+    if (!item) {
+      return res.status(404).json({ 
+        message: `${typeMap[type]} not found`,
+        details: `No ${typeMap[type].toLowerCase()} found with ID: ${id}`
+      });
+    }
+
+    // Check if athlete has already applied
+    const existingApplication = await Application.findOne({
       athlete: req.user.id,
-      type,
-      itemId: id,
-      message
+      itemType: typeMap[type],
+      itemId: id
     });
 
+    if (existingApplication) {
+      return res.status(400).json({ 
+        message: 'Duplicate application',
+        details: 'You have already applied for this opportunity'
+      });
+    }
+
+    // Create application object
+    const applicationData = {
+      athlete: req.user.id,
+      itemType: typeMap[type],
+      itemId: id,
+      message,
+      requirements,
+      status: 'pending'
+    };
+
+    // Add event reference if type is event
+    if (type === 'event') {
+      applicationData.event = id;
+    }
+
+    const application = new Application(applicationData);
     await application.save();
 
     // Update the athlete's applications array
@@ -230,33 +287,31 @@ router.post('/apply/:type/:id', auth, async (req, res) => {
     res.status(201).json(application);
   } catch (error) {
     console.error('Error creating application:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ 
+      message: 'Server error during application submission',
+      error: error.message 
+    });
   }
 });
 
 // Get athlete's applications
 router.get('/applications', auth, async (req, res) => {
   try {
-    // Get athlete's applications with populated event and organization details
     const applications = await Application.find({ athlete: req.user.id })
+      .populate('athlete')
       .populate({
-        path: 'event',
-        select: 'title organization',
+        path: 'itemId',
         populate: {
           path: 'organization',
-          select: 'name'
+          select: 'name email contactNumber'
         }
       })
-      .populate('itemId', 'title') // For sponsorships/travel supports
       .sort({ createdAt: -1 });
 
     res.json(applications);
   } catch (error) {
     console.error('Error fetching applications:', error);
-    res.status(500).json({ 
-      message: 'Error fetching applications',
-      error: error.message 
-    });
+    res.status(500).json({ message: 'Server error' });
   }
 });
 

@@ -5,6 +5,7 @@ const ApplicationManager = () => {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedAthlete, setSelectedAthlete] = useState(null);
+
   const styles = {
     container: {
       padding: '20px',
@@ -14,19 +15,14 @@ const ApplicationManager = () => {
     heading: {
       fontSize: '24px',
       marginBottom: '20px',
-      color: '#ffffff',
-      background: 'linear-gradient(to right, #3b82f6, #8b5cf6)',
-      WebkitBackgroundClip: 'text',
-      WebkitTextFillColor: 'transparent'
+      color: '#2d3748'
     },
     requestCard: {
-      backgroundColor: 'rgba(255, 255, 255, 0.1)',
-      backdropFilter: 'blur-lg',
+      backgroundColor: 'white',
       borderRadius: '8px',
       padding: '20px',
       marginBottom: '20px',
-      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-      border: '1px solid rgba(255, 255, 255, 0.1)'
+      boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
     },
     requestHeader: {
       display: 'flex',
@@ -37,10 +33,10 @@ const ApplicationManager = () => {
     eventTitle: {
       fontSize: '18px',
       marginBottom: '5px',
-      color: '#ffffff'
+      color: '#2d3748'
     },
     athleteInfo: {
-      color: '#cbd5e0',
+      color: '#4a5568',
       marginBottom: '10px'
     },
     status: {
@@ -50,11 +46,10 @@ const ApplicationManager = () => {
       fontWeight: '500'
     },
     requestContent: {
-      marginBottom: '15px',
-      color: '#e2e8f0'
+      marginBottom: '15px'
     },
     date: {
-      color: '#a0aec0',
+      color: '#718096',
       fontSize: '14px',
       marginTop: '10px'
     },
@@ -70,12 +65,11 @@ const ApplicationManager = () => {
       color: 'white',
       cursor: 'pointer',
       fontSize: '14px',
-      fontWeight: '500',
-      transition: 'all 0.3s ease'
+      fontWeight: '500'
     },
     noRequests: {
       textAlign: 'center',
-      color: '#a0aec0',
+      color: '#718096',
       padding: '20px'
     },
     modal: {
@@ -84,22 +78,20 @@ const ApplicationManager = () => {
       left: '0',
       right: '0',
       bottom: '0',
-      backgroundColor: 'rgba(0,0,0,0.7)',
+      backgroundColor: 'rgba(0,0,0,0.5)',
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
       zIndex: 1000
     },
     modalContent: {
-      backgroundColor: '#1a202c',
+      backgroundColor: 'white',
       padding: '30px',
       borderRadius: '8px',
       maxWidth: '800px',
       width: '90%',
       maxHeight: '90vh',
-      overflow: 'auto',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
-      color: '#ffffff'
+      overflow: 'auto'
     },
     athleteProfile: {
       marginBottom: '20px'
@@ -112,8 +104,7 @@ const ApplicationManager = () => {
     },
     mediaItem: {
       borderRadius: '8px',
-      overflow: 'hidden',
-      border: '1px solid rgba(255, 255, 255, 0.1)'
+      overflow: 'hidden'
     },
     mediaImage: {
       width: '100%',
@@ -127,9 +118,8 @@ const ApplicationManager = () => {
     achievementsSection: {
       marginTop: '20px',
       padding: '15px',
-      backgroundColor: 'rgba(255, 255, 255, 0.05)',
-      borderRadius: '8px',
-      border: '1px solid rgba(255, 255, 255, 0.1)'
+      backgroundColor: '#f8f9fa',
+      borderRadius: '8px'
     },
     closeButton: {
       backgroundColor: '#f44336',
@@ -138,25 +128,17 @@ const ApplicationManager = () => {
       border: 'none',
       borderRadius: '4px',
       cursor: 'pointer',
-      marginTop: '20px',
-      transition: 'all 0.3s ease',
-      '&:hover': {
-        backgroundColor: '#d32f2f'
-      }
+      marginTop: '20px'
     },
     viewProfileButton: {
-      background: 'linear-gradient(to right, #3b82f6, #8b5cf6)',
+      backgroundColor: '#2196F3',
       color: 'white',
       padding: '8px 16px',
       border: 'none',
       borderRadius: '4px',
       cursor: 'pointer',
       fontSize: '14px',
-      marginTop: '10px',
-      transition: 'all 0.3s ease',
-      '&:hover': {
-        opacity: 0.9
-      }
+      marginTop: '10px'
     },
     profileHeader: {
       display: 'flex',
@@ -167,24 +149,22 @@ const ApplicationManager = () => {
       width: '200px',
       height: '200px',
       borderRadius: '8px',
-      objectFit: 'cover',
-      border: '2px solid rgba(255, 255, 255, 0.1)'
+      objectFit: 'cover'
     },
     profileInfo: {
-      flex: 1,
-      color: '#ffffff'
+      flex: 1
     },
     mediaSection: {
       marginBottom: '30px'
     },
     detailsSection: {
-      backgroundColor: 'rgba(255, 255, 255, 0.05)',
+      backgroundColor: 'white',
       padding: '20px',
       borderRadius: '8px',
-      marginBottom: '20px',
-      border: '1px solid rgba(255, 255, 255, 0.1)'
+      marginBottom: '20px'
     }
   };
+
   const fetchApplications = useCallback(async () => {
     try {
       const response = await axios.get('/api/organizations/applications');
@@ -196,9 +176,11 @@ const ApplicationManager = () => {
       setLoading(false);
     }
   }, []);
+
   useEffect(() => {
     fetchApplications();
   }, [fetchApplications]);
+
   const handleApplicationStatus = async (applicationId, status) => {
     try {
       await axios.put(`/api/organizations/applications/${applicationId}`, { status });
@@ -209,27 +191,22 @@ const ApplicationManager = () => {
       alert('Failed to update request status');
     }
   };
+
   const fetchAthleteProfile = async (athleteId) => {
     try {
       const response = await axios.get(`/api/organizations/athlete/${athleteId}`);
-      if (response.data) {
-        const profileData = {
-          ...response.data,
-          photos: response.data.photos || [],
-          videos: response.data.videos || []
-        };
-        setSelectedAthlete(profileData);
-      } else {
-        throw new Error('No profile data received');
-      }
+      setSelectedAthlete(response.data);
     } catch (error) {
       console.error('Error fetching athlete profile:', error);
-      alert('Failed to fetch athlete profile. Please try again.');
+      alert('Failed to fetch athlete profile');
     }
   };
+
   const renderAthleteProfile = () => {
     if (!selectedAthlete) return null;
+
     const profilePhoto = selectedAthlete.photos?.[0]?.url || 'default-profile-photo.jpg';
+
     return (
       <div style={styles.modal}>
         <div style={styles.modalContent}>
@@ -246,6 +223,7 @@ const ApplicationManager = () => {
               <p><strong>Location:</strong> {selectedAthlete.city}, {selectedAthlete.state}</p>
             </div>
           </div>
+
           <div style={styles.mediaSection}>
             <h3>Photos & Videos</h3>
             <div style={styles.mediaGrid}>
@@ -266,6 +244,7 @@ const ApplicationManager = () => {
               ))}
             </div>
           </div>
+
           <div style={styles.detailsSection}>
             <h3>Personal Information</h3>
             <p><strong>Age:</strong> {selectedAthlete.age}</p>
@@ -286,6 +265,7 @@ const ApplicationManager = () => {
               </div>
             )}
           </div>
+
           <button 
             onClick={() => setSelectedAthlete(null)}
             style={styles.closeButton}
@@ -296,9 +276,11 @@ const ApplicationManager = () => {
       </div>
     );
   };
+
   if (loading) {
     return <div>Loading requests...</div>;
   }
+
   return (
     <div style={styles.container}>
       <h2 style={styles.heading}>Event Requests</h2>
@@ -359,8 +341,10 @@ const ApplicationManager = () => {
       ) : (
         <p style={styles.noRequests}>No pending requests</p>
       )}
+
       {selectedAthlete && renderAthleteProfile()}
     </div>
   );
 };
-export default ApplicationManager;
+
+export default ApplicationManager; 
