@@ -6,10 +6,14 @@ import SponsorshipForm from './SponsorshipForm';
 import TransportForm from './TransportForm';
 import OrganizationProfile from './OrganizationProfile';
 import ApplicationManager from './ApplicationManager';
-import { Medal, Bell } from 'lucide-react';
+
+import { Medal, Trophy, LogOut, Search, Bell, Plus } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
+import { motion } from 'framer-motion';
 
 const OrganizationDashboard = () => {
   const navigate = useNavigate();
+  const { logout } = useAuth();
   const [activeTab, setActiveTab] = useState('events');
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -18,7 +22,8 @@ const OrganizationDashboard = () => {
   const [applications, setApplications] = useState([]);
   const [sponsorships, setSponsorships] = useState([]);
   const [travelSupports, setTravelSupports] = useState([]);
-  const sidebarItems = [
+  const [searchQuery, setSearchQuery] = useState('');
+  const menuItems = [
     { id: 'profile', label: 'Organization Profile', icon: '👤' },
     { id: 'events', label: 'Events', icon: '🎯' },
     { id: 'sponsorships', label: 'Sponsorships', icon: '💰' },
@@ -125,14 +130,21 @@ const OrganizationDashboard = () => {
     };
 
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start z-[100] pt-20">
-        <div className="bg-white/95 backdrop-blur-sm rounded-lg w-11/12 md:w-3/5 max-h-[80vh] overflow-y-auto relative p-4">
-          <button 
-            className="absolute top-2 right-2 text-white bg-red-500 hover:bg-red-600 px-3 py-1 rounded-md text-lg font-medium z-[101] transition-colors duration-200 flex items-center justify-center shadow-lg"
-            onClick={handleFormClose}
-          >
-            Close
-          </button>
+      <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex justify-center items-start z-[100] pt-20">
+        <div className="bg-[#0F0F2D]/95 backdrop-blur-lg rounded-xl w-11/12 md:w-3/5 max-h-[80vh] overflow-y-auto relative p-8 border border-white/10 shadow-2xl">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+              {activeTab === 'events' ? 'Create New Event' : activeTab === 'sponsorships' ? 'Create New Sponsorship' : 'Create Travel Support'}
+            </h3>
+            <button 
+              className="text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 p-2 rounded-lg transition-all duration-200"
+              onClick={handleFormClose}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
           {activeTab === 'events' && <EventForm onClose={handleFormClose} />}
           {activeTab === 'sponsorships' && <SponsorshipForm onClose={handleFormClose} />}
           {activeTab === 'travel' && <TransportForm onClose={handleFormClose} />}
@@ -223,42 +235,80 @@ const OrganizationDashboard = () => {
       </nav>
 
       {/* Sidebar */}
-      <aside className="fixed left-0 top-16 w-64 h-[calc(100vh-4rem)] bg-white/10 backdrop-blur-lg shadow-lg z-40 overflow-y-auto">
-        <div className="p-4 space-y-2">
-          {sidebarItems.map(item => (
-            <button
-              key={item.id}
-              onClick={() => setActiveTab(item.id)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${activeTab === item.id ? 'bg-blue-500/20 text-blue-400' : 'text-white/80 hover:bg-white/5'}`}
-            >
-              <span className="text-xl">{item.icon}</span>
-              <span className="font-medium">{item.label}</span>
-            </button>
-          ))}
+      <div className="w-64 bg-[#0F0F2D] p-4 flex flex-col">
+        <div className="flex items-center space-x-2 mb-8 px-2">
+          <Trophy className="h-8 w-8 text-blue-500" />
+          <span className="text-white text-xl font-bold">UnnatiVeer</span>
         </div>
-      </aside>
+
+        <nav className="flex-1">
+          {menuItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <motion.button
+                key={item.id}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setActiveTab(item.id)}
+                className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg mb-2 transition-colors ${
+                  activeTab === item.id
+                    ? 'bg-blue-600 text-white'
+                    : 'text-gray-400 hover:bg-white/5'
+                }`}
+              >
+                <span className="text-xl">{item.icon}</span>
+                <span>{item.label}</span>
+              </motion.button>
+            );
+          })}
+        </nav>
+
+        <div className="border-t border-white/10 pt-4">
+          <button 
+            onClick={async () => {
+              await logout();
+              navigate('/');
+            }}
+            className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 transition-colors"
+          >
+            <LogOut className="h-5 w-5" />
+            <span>Logout</span>
+          </button>
+        </div>
+      </div>
 
       {/* Main Content */}
-      <main className="ml-64 pt-16 min-h-screen relative z-30 pb-8">
-        <div className="p-8 max-w-7xl mx-auto">
-          {/* Page Header */}
-          <div className="mb-8 bg-white/10 backdrop-blur-lg rounded-xl shadow-sm p-6">
-            <div className="flex justify-between items-center">
-              <h1 className="text-2xl font-bold text-white">
-                {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
-              </h1>
-              {activeTab !== 'profile' && activeTab !== 'applications' && (
-                <button
-                  onClick={() => setShowForm(true)}
-                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg hover:opacity-90 transition-opacity duration-200 shadow-sm"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
-                  </svg>
-                  Create New
-                </button>
-              )}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Header */}
+        <header className="h-16 bg-[#0F0F2D] border-b border-white/10 flex items-center justify-between px-6">
+          <div className="flex-1"></div>
+          <div className="flex items-center space-x-4">
+            <button className="relative p-2 text-gray-400 hover:text-white transition-colors">
+              <Bell className="h-6 w-6" />
+              <span className="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full"></span>
+            </button>
+            <div className="h-8 w-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-medium">
+              {organizationData?.name?.charAt(0) || 'O'}
             </div>
+          </div>
+        </header>
+
+        {/* Main Content Area */}
+        <main className="flex-1 overflow-auto p-6">
+          {/* Page Header */}
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-2xl font-bold text-white">
+              {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+            </h1>
+            {activeTab !== 'profile' && activeTab !== 'applications' && (
+              <button
+                onClick={() => setShowForm(true)}
+                className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg hover:shadow-lg transition-all duration-300 transform hover:scale-105"
+              >
+                <Plus className="h-5 w-5" />
+                <span>Create New</span>
+              </button>
+            )}
           </div>
 
           {/* Content Area */}
@@ -289,11 +339,11 @@ const OrganizationDashboard = () => {
               </>
             )}
           </div>
-        </div>
-      </main>
+        </main>
 
-      {/* Modal Form */}
-      {renderForm()}
+        {/* Modal Form */}
+        {renderForm()}
+      </div>
     </div>
   );
 };

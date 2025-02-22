@@ -73,11 +73,19 @@ function App() {
               {isAuthenticated ? (
                 <div className="relative group">
                   <button
-                    className="group relative"
+                    className="group relative flex items-center justify-center w-full"
                     onClick={() => setShowLoginOptions(!showLoginOptions)}
                   >
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center text-white font-medium text-lg transform transition-all duration-300 hover:scale-110 hover:shadow-lg">
-                      {userData?.name?.charAt(0) || userType?.charAt(0)?.toUpperCase()}
+                      {userData?.profileImage ? (
+                        <img
+                          src={userData.profileImage}
+                          alt="Profile"
+                          className="w-full h-full rounded-full object-cover"
+                        />
+                      ) : (
+                        <Users className="w-6 h-6" />
+                      )}
                     </div>
                     <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-[#0B0B1E] transform transition-all duration-300 group-hover:scale-110"></div>
                   </button>

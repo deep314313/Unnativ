@@ -139,7 +139,7 @@ const EventForm = ({ onClose }) => {
             name="title"
             value={formData.title}
             onChange={handleChange}
-            className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
+            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/25 transition-all duration-200"
             required
           />
         </div>
@@ -166,7 +166,7 @@ const EventForm = ({ onClose }) => {
               name="eventType"
               value={formData.eventType}
               onChange={handleChange}
-              className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
+              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/25 transition-all duration-200"
               required
             >
               <option value="">Select Type</option>
@@ -184,7 +184,7 @@ const EventForm = ({ onClose }) => {
               name="sport"
               value={formData.sport}
               onChange={handleChange}
-              className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
+              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/25 transition-all duration-200"
               required
             >
               <option value="">Select Sport</option>
@@ -203,7 +203,7 @@ const EventForm = ({ onClose }) => {
               name="level"
               value={formData.level}
               onChange={handleChange}
-              className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
+              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/25 transition-all duration-200"
               required
             >
               <option value="">Select Level</option>
@@ -226,7 +226,7 @@ const EventForm = ({ onClose }) => {
               name="date"
               value={formData.date}
               onChange={handleChange}
-              className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
+              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/25 transition-all duration-200"
               required
             />
           </div>
@@ -240,7 +240,7 @@ const EventForm = ({ onClose }) => {
               name="endDate"
               value={formData.endDate}
               onChange={handleChange}
-              className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
+              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/25 transition-all duration-200"
               required
             />
           </div>
@@ -259,7 +259,7 @@ const EventForm = ({ onClose }) => {
                 name="location.venue"
                 value={formData.location.venue}
                 onChange={handleChange}
-                className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/25 transition-all duration-200"
                 required
               />
             </div>
@@ -272,7 +272,7 @@ const EventForm = ({ onClose }) => {
                 name="location.city"
                 value={formData.location.city}
                 onChange={handleChange}
-                className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/25 transition-all duration-200"
                 required
               />
             </div>
@@ -285,7 +285,7 @@ const EventForm = ({ onClose }) => {
               name="location.state"
               value={formData.location.state}
               onChange={handleChange}
-              className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
+              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/25 transition-all duration-200"
               required
             >
               <option value="">Select State</option>
@@ -348,7 +348,7 @@ const EventForm = ({ onClose }) => {
                     name="travelAllowance.amount.min"
                     value={formData.travelAllowance.amount.min}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/25 transition-all duration-200"
                   />
                 </div>
                 <div>
@@ -360,7 +360,7 @@ const EventForm = ({ onClose }) => {
                     name="travelAllowance.amount.max"
                     value={formData.travelAllowance.amount.max}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/25 transition-all duration-200"
                   />
                 </div>
               </div>
@@ -372,7 +372,7 @@ const EventForm = ({ onClose }) => {
                   name="travelAllowance.details"
                   value={formData.travelAllowance.details}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/25 transition-all duration-200"
                   placeholder="Specify travel allowance terms and conditions"
                 />
               </div>

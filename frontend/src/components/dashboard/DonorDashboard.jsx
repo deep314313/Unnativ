@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from '../../utils/axios';
 import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import AthleteProfile from './AthleteProfile';
 import DonateModal from './DonateModal';
 import { motion } from 'framer-motion';
@@ -8,6 +9,7 @@ import { Trophy, Settings, Bell, ChevronDown, Users, Heart, LineChart, Calendar,
 
 const DonorDashboard = () => {
   const { logout } = useAuth();
+  const navigate = useNavigate();
   const [athletes, setAthletes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedAthlete, setSelectedAthlete] = useState(null);
@@ -667,7 +669,10 @@ const DonorDashboard = () => {
             <span>Settings</span>
           </button>
           <button 
-            onClick={logout}
+            onClick={async () => {
+              await logout();
+              navigate('/');
+            }}
             className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 transition-colors"
           >
             <LogOut className="h-5 w-5" />
