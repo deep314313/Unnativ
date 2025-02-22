@@ -33,7 +33,7 @@ const AthleteRegister = () => {
       const response = await axios.post('/api/athletes/register', formData);
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
-        navigate('/athlete/dashboard');
+        navigate('/login/athlete');
       }
     } catch (error) {
       console.error('Registration failed:', error);
