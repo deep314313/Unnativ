@@ -14,8 +14,18 @@ const DonorDashboard = () => {
   const [showDonateModal, setShowDonateModal] = useState(false);
   const [donationAmount, setDonationAmount] = useState('');
   const [activeTab, setActiveTab] = useState('athletes');
+  const [donations, setDonations] = useState([]);
+  const [donationsLoading, setDonationsLoading] = useState(false);
   const [showDonorTypeModal, setShowDonorTypeModal] = useState(false);
   const [donorType, setDonorType] = useState('individual');
+  const [donationFilters, setDonationFilters] = useState({
+    startDate: '',
+    endDate: '',
+    athleteName: '',
+    minAmount: '',
+    maxAmount: ''
+  });
+
   const [filters, setFilters] = useState({
     name: '',
     location: '',
@@ -219,9 +229,27 @@ const DonorDashboard = () => {
     }
   }, [filters]);
 
+  const fetchDonations = useCallback(async () => {
+    if (activeTab === 'donations') {
+      try {
+        setDonationsLoading(true);
+        const response = await axios.get('/api/donors/donations');
+        setDonations(response.data);
+      } catch (error) {
+        console.error('Error fetching donations:', error);
+      } finally {
+        setDonationsLoading(false);
+      }
+    }
+  }, [activeTab]);
+
   useEffect(() => {
     fetchAthletes();
   }, [fetchAthletes]);
+
+  useEffect(() => {
+    fetchDonations();
+  }, [fetchDonations]);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -294,8 +322,7 @@ const DonorDashboard = () => {
                 <motion.div
                   key={athlete._id}
                   whileHover={{ y: -4 }}
-                  className="bg-[#0F0F2D] rounded-lg p-6 cursor-pointer"
-                  onClick={() => fetchAthleteProfile(athlete._id)}
+                  className="bg-[#0F0F2D] rounded-lg p-6"
                 >
                   <h3 className="text-xl font-semibold text-white mb-4">{athlete.fullName}</h3>
                   <div className="space-y-2 text-gray-400">
@@ -305,6 +332,7 @@ const DonorDashboard = () => {
                     <p><span className="font-medium">Level:</span> {athlete.currentLevel}</p>
                   </div>
                   <button
+                    onClick={() => fetchAthleteProfile(athlete._id)}
                     className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors"
                   >
                     View Profile
@@ -315,7 +343,109 @@ const DonorDashboard = () => {
           </div>
         );
       case 'donations':
-        return <div className="text-white">Donations content coming soon...</div>;
+        return (
+          <div className="space-y-6">
+            <div className="bg-[#0F0F2D] p-6 rounded-lg">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-semibold text-white">Recent Donations</h3>
+                <button
+                  onClick={clearDonationHistory}
+                  className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm transition-colors"
+                >
+                  Clear History
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <input
+                  type="date"
+                  name="startDate"
+                  value={donationFilters.startDate}
+                  onChange={handleDonationFilterChange}
+                  className="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white"
+                />
+                <input
+                  type="date"
+                  name="endDate"
+                  value={donationFilters.endDate}
+                  onChange={handleDonationFilterChange}
+                  className="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white"
+                />
+                <input
+                  type="text"
+                  name="athleteName"
+                  value={donationFilters.athleteName}
+                  onChange={handleDonationFilterChange}
+                  placeholder="Search by athlete name"
+                  className="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white placeholder-gray-400"
+                />
+                <input
+                  type="number"
+                  name="minAmount"
+                  value={donationFilters.minAmount}
+                  onChange={handleDonationFilterChange}
+                  placeholder="Min amount"
+                  className="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white placeholder-gray-400"
+                />
+                <input
+                  type="number"
+                  name="maxAmount"
+                  value={donationFilters.maxAmount}
+                  onChange={handleDonationFilterChange}
+                  placeholder="Max amount"
+                  className="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white placeholder-gray-400"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 gap-4">
+                {donationsLoading ? (
+                  <div className="flex justify-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                  </div>
+                ) : filteredDonations.length === 0 ? (
+                  <div className="text-center py-8 text-gray-400">
+                    No donations found
+                  </div>
+                ) : (
+                  filteredDonations.map(donation => (
+                    <div key={donation._id} className="bg-white/5 rounded-lg p-4 border border-white/10">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h4 className="text-white font-medium">Donation to {donation.athlete.fullName}</h4>
+                          <p className="text-gray-400 text-sm">{donation.athlete.sportsCategory} | {donation.athlete.currentLevel}</p>
+                          <p className="text-gray-400 text-xs mt-1">{new Date(donation.createdAt).toLocaleString()}</p>
+                        </div>
+                        <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm">
+                          {donation.status}
+                        </span>
+                      </div>
+                      <div className="mt-4 space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-400">Amount</span>
+                          <span className="text-white font-medium">₹{donation.amount}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-400">Transaction ID</span>
+                          <span className="text-white font-medium">{donation.paymentId || 'Pending'}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-400">Order ID</span>
+                          <span className="text-white font-medium">{donation.orderId}</span>
+                        </div>
+                      </div>
+                      <button 
+                        onClick={() => fetchAthleteProfile(donation.athlete._id)}
+                        className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors text-sm"
+                      >
+                        View Athlete Profile
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        );
       case 'analytics':
         return <div className="text-white">Analytics content coming soon...</div>;
       case 'events':
@@ -324,6 +454,42 @@ const DonorDashboard = () => {
         return null;
     }
   };
+
+  const handleDonationFilterChange = (e) => {
+    const { name, value } = e.target;
+    setDonationFilters(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const clearDonationHistory = async () => {
+    if (window.confirm('Are you sure you want to clear all donation history? This action cannot be undone.')) {
+      try {
+        await axios.delete('/api/donors/donations');
+        setDonations([]);
+      } catch (error) {
+        console.error('Error clearing donation history:', error);
+        alert('Failed to clear donation history');
+      }
+    }
+  };
+
+  const filteredDonations = donations.filter(donation => {
+    const donationDate = new Date(donation.createdAt);
+    const startDate = donationFilters.startDate ? new Date(donationFilters.startDate) : null;
+    const endDate = donationFilters.endDate ? new Date(donationFilters.endDate) : null;
+    const amount = donation.amount;
+    const athleteName = donation.athlete.fullName.toLowerCase();
+
+    return (
+      (!startDate || donationDate >= startDate) &&
+      (!endDate || donationDate <= endDate) &&
+      (!donationFilters.minAmount || amount >= Number(donationFilters.minAmount)) &&
+      (!donationFilters.maxAmount || amount <= Number(donationFilters.maxAmount)) &&
+      (!donationFilters.athleteName || athleteName.includes(donationFilters.athleteName.toLowerCase()))
+    );
+  });
 
   const handleAthleteClick = (athlete) => {
     setSelectedAthlete({

@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Building2, Users, Heart, ChevronRight, Trophy } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 function App() {
+  const navigate = useNavigate();
+  const { isAuthenticated, userType, userData, logout } = useAuth();
   const [showCards, setShowCards] = useState(false);
   const [showLoginOptions, setShowLoginOptions] = useState(false);
   const [showSignupOptions, setShowSignupOptions] = useState(false);
@@ -67,82 +70,122 @@ function App() {
               <a href="#success-stories" className="text-white hover:text-blue-400 transition">Success Stories</a>
             </div>
             <div className="flex items-center space-x-4">
-              <div className="relative group">
-                <button
-                  className="text-white hover:text-blue-400 transition"
-                  onClick={() => {
-                    setShowLoginOptions(!showLoginOptions);
-                    setShowSignupOptions(false);
-                  }}
-                >
-                  Log in
-                </button>
-                {showLoginOptions && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 z-[100]"
+              {isAuthenticated ? (
+                <div className="relative group">
+                  <button
+                    className="group relative"
+                    onClick={() => setShowLoginOptions(!showLoginOptions)}
                   >
-                    <Link
-                      to="/login/athlete"
-                      className="block px-4 py-2 text-gray-800 hover:bg-blue-50 hover:text-blue-600"
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center text-white font-medium text-lg transform transition-all duration-300 hover:scale-110 hover:shadow-lg">
+                      {userData?.name?.charAt(0) || userType?.charAt(0)?.toUpperCase()}
+                    </div>
+                    <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-[#0B0B1E] transform transition-all duration-300 group-hover:scale-110"></div>
+                  </button>
+                  {showLoginOptions && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 z-[100]"
                     >
-                      Athlete Login
-                    </Link>
-                    <Link
-                      to="/login/donor"
-                      className="block px-4 py-2 text-gray-800 hover:bg-blue-50 hover:text-blue-600"
+                      <Link
+                        to={`/${userType}/dashboard`}
+                        className="block px-4 py-2 text-gray-800 hover:bg-blue-50 hover:text-blue-600"
+                      >
+                        Dashboard
+                      </Link>
+                      <button
+                        onClick={async () => {
+                          await logout();
+                          navigate('/');
+                        }}
+                        className="w-full text-left px-4 py-2 text-gray-800 hover:bg-blue-50 hover:text-blue-600"
+                      >
+                        Logout
+                      </button>
+                    </motion.div>
+                  )}
+                </div>
+              ) : (
+                <>
+                  <div className="relative group">
+                    <button
+                      className="text-white hover:text-blue-400 transition"
+                      onClick={() => {
+                        setShowLoginOptions(!showLoginOptions);
+                        setShowSignupOptions(false);
+                      }}
                     >
-                      Donor Login
-                    </Link>
-                    <Link
-                      to="/login/organization"
-                      className="block px-4 py-2 text-gray-800 hover:bg-blue-50 hover:text-blue-600"
+                      Log in
+                    </button>
+                    {showLoginOptions && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 z-[100]"
+                      >
+                        <Link
+                          to="/login/athlete"
+                          className="block px-4 py-2 text-gray-800 hover:bg-blue-50 hover:text-blue-600"
+                        >
+                          Athlete Login
+                        </Link>
+                        <Link
+                          to="/login/donor"
+                          className="block px-4 py-2 text-gray-800 hover:bg-blue-50 hover:text-blue-600"
+                        >
+                          Donor Login
+                        </Link>
+                        <Link
+                          to="/login/organization"
+                          className="block px-4 py-2 text-gray-800 hover:bg-blue-50 hover:text-blue-600"
+                        >
+                          Organization Login
+                        </Link>
+                      </motion.div>
+                    )}
+                  </div>
+                  <div className="relative group">
+                    <button
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full transition"
+                      onClick={() => {
+                        setShowSignupOptions(!showSignupOptions);
+                        setShowLoginOptions(false);
+                      }}
                     >
-                      Organization Login
-                    </Link>
-                  </motion.div>
-                )}
-              </div>
-              <div className="relative group">
-                <button
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full transition"
-                  onClick={() => {
-                    setShowSignupOptions(!showSignupOptions);
-                    setShowLoginOptions(false);
-                  }}
-                >
-                  Sign Up
-                </button>
-                {showSignupOptions && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 z-[100]"
-                  >
-                    <Link
-                      to="/register/athlete"
-                      className="block px-4 py-2 text-gray-800 hover:bg-blue-50 hover:text-blue-600"
-                    >
-                      Athlete Signup
-                    </Link>
-                    <Link
-                      to="/register/donor"
-                      className="block px-4 py-2 text-gray-800 hover:bg-blue-50 hover:text-blue-600"
-                    >
-                      Donor Signup
-                    </Link>
-                    <Link
-                      to="/register/organization"
-                      className="block px-4 py-2 text-gray-800 hover:bg-blue-50 hover:text-blue-600"
-                    >
-                      Organization Signup
-                    </Link>
-                  </motion.div>
-                )}
-              </div>
+                      Sign Up
+                    </button>
+                    {showSignupOptions && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 z-[100]"
+                      >
+                        <Link
+                          to="/register/athlete"
+                          className="block px-4 py-2 text-gray-800 hover:bg-blue-50 hover:text-blue-600"
+                        >
+                          Athlete Signup
+                        </Link>
+                        <Link
+                          to="/register/donor"
+                          className="block px-4 py-2 text-gray-800 hover:bg-blue-50 hover:text-blue-600"
+                        >
+                          Donor Signup
+                        </Link>
+                        <Link
+                          to="/register/organization"
+                          className="block px-4 py-2 text-gray-800 hover:bg-blue-50 hover:text-blue-600"
+                        >
+                          Organization Signup
+                        </Link>
+                      </motion.div>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -284,8 +327,8 @@ function App() {
               className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 hover:bg-white/15 transition-all duration-300"
             >
               <div className="flex items-start gap-4 mb-6">
-                <div className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center">
-                  <Building2 className="w-8 h-8 text-white" />
+                <div className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center text-white font-medium text-lg">
+                  <Users className="w-6 h-6" />
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold mb-2">Sports Academy Impact</h3>
