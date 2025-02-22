@@ -217,21 +217,13 @@ router.post('/donate/:athleteId', auth, async (req, res) => {
     const { amount } = req.body;
     const athleteId = req.params.athleteId;
 
-    const donation = new Donation({
-      donor: req.user.id,
-      athlete: athleteId,
+    // Create a Razorpay order
+    const response = await axios.post('/api/payments/create-order', {
       amount,
-      status: 'completed'
+      athleteId
     });
 
-    await donation.save();
-
-    // Update athlete's total donations
-    await Athlete.findByIdAndUpdate(athleteId, {
-      $inc: { totalDonations: amount }
-    });
-
-    res.status(201).json(donation);
+    res.status(201).json(response.data);
   } catch (error) {
     console.error('Error processing donation:', error);
     res.status(500).json({ message: 'Failed to process donation' });

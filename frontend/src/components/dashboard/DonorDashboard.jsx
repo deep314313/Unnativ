@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from '../../utils/axios';
 import { useAuth } from '../../context/AuthContext';
 import AthleteProfile from './AthleteProfile';
+import DonateModal from './DonateModal';
 import { motion } from 'framer-motion';
 import { Trophy, Settings, Bell, ChevronDown, Users, Heart, LineChart, Calendar, LogOut } from 'lucide-react';
 
@@ -418,14 +419,42 @@ const DonorDashboard = () => {
                 <p>{selectedAthlete.achievements}</p>
               </div>
             )}
+
+            <div style={{ marginTop: '30px', display: 'flex', gap: '10px' }}>
+              <button 
+                onClick={() => setShowDonateModal(true)}
+                style={{
+                  ...styles.button,
+                  background: 'linear-gradient(to right, #4CAF50, #45a049)',
+                  padding: '12px 24px',
+                  fontSize: '18px',
+                  width: '200px'
+                }}
+              >
+                Donate Now
+              </button>
+
+              {showDonateModal && (
+                <DonateModal
+                  isOpen={showDonateModal}
+                  onClose={() => setShowDonateModal(false)}
+                  athlete={selectedAthlete}
+                />
+              )}
+              <button 
+                onClick={() => setSelectedAthlete(null)}
+                style={{
+                  ...styles.closeButton,
+                  padding: '12px 24px',
+                  fontSize: '18px'
+                }}
+              >
+                Close
+              </button>
+            </div>
           </div>
 
-          <button 
-            onClick={() => setSelectedAthlete(null)}
-            style={styles.closeButton}
-          >
-            Close
-          </button>
+
         </div>
       </div>
     );
