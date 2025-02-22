@@ -1,13 +1,40 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Calendar, Trophy, Users, Target, MapPin, Filter, Menu, Bell } from 'lucide-react';
+import axios from '../../utils/axios';
+import AthleteProfile from './AthleteProfile';
 
 const AthleteDashboard = () => {
   const [activeTab, setActiveTab] = useState('events');
   const [events, setEvents] = useState([]);
   const [sponsorships, setSponsorships] = useState([]);
   const [travelSupports, setTravelSupports] = useState([]);
+  const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
+  const [athleteProfile, setAthleteProfile] = useState(null);
+
+  const handleApply = async (id, type) => {
+    try {
+      const response = await axios.post(`/api/athletes/apply/${type}/${id}`, {
+        message: `I am interested in this ${type} opportunity and would like to apply.`,
+        requirements: 'No specific requirements'
+      });
+      
+      // Refresh applications list after successful application
+      const applicationsResponse = await axios.get('/api/athletes/applications');
+      setApplications(applicationsResponse.data);
+      
+      // Show success message
+      alert('Application submitted successfully!');
+      
+      // Switch to applications tab
+      setActiveTab('applications');
+    } catch (error) {
+      console.error('Error submitting application:', error);
+      const errorMessage = error.response?.data?.message || 'Failed to submit application. Please try again.';
+      alert(errorMessage);
+    }
+  };
 
   const tabs = [
     { id: 'events', label: 'Events', icon: Target },
@@ -19,14 +46,25 @@ const AthleteDashboard = () => {
 
   const fetchData = useCallback(async () => {
     setLoading(true);
-    // Simulated data fetch
-    setTimeout(() => {
-      setEvents([
-        { _id: '1', title: 'Marathon 2025', date: '2025-03-15', location: 'New York' },
-        { _id: '2', title: 'Track & Field Championship', date: '2025-04-01', location: 'Los Angeles' }
-      ]);
+    try {
+      if (activeTab === 'events') {
+        const response = await axios.get('/api/events');
+        setEvents(response.data);
+      } else if (activeTab === 'sponsorships') {
+        const response = await axios.get('/api/sponsorships');
+        setSponsorships(response.data);
+      } else if (activeTab === 'travel') {
+        const response = await axios.get('/api/athletes/travel-supports');
+        setTravelSupports(response.data);
+      } else if (activeTab === 'applications') {
+        const response = await axios.get('/api/athletes/applications');
+        setApplications(response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   }, [activeTab]);
 
   useEffect(() => {
@@ -103,15 +141,91 @@ const AthleteDashboard = () => {
                   <h3 className="text-lg font-semibold text-white">{event.title}</h3>
                   <div className="flex items-center gap-2 text-gray-400">
                     <Calendar className="w-4 h-4" />
-                    <span className="text-sm">{event.date}</span>
+                    <span className="text-sm">{new Date(event.date).toLocaleDateString()}</span>
                   </div>
                   <div className="flex items-center gap-2 text-gray-400">
                     <MapPin className="w-4 h-4" />
-                    <span className="text-sm">{event.location}</span>
+                    <span className="text-sm">{event.location.city}, {event.location.state}</span>
+                  </div>
+                  <button
+                    onClick={() => handleApply(event._id, 'event')}
+                    className="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg transition-colors"
+                  >
+                    Apply Now
+                  </button>
+                </div>
+              </div>
+            ))}
+
+            {activeTab === 'sponsorships' && sponsorships.map(sponsorship => (
+              <div
+                key={sponsorship._id}
+                className="bg-black/30 backdrop-blur-xl border border-gray-800 rounded-xl p-6 hover:border-gray-700 transition-all duration-300"
+              >
+                <div className="flex flex-col gap-3">
+                  <div className="w-full h-32 rounded-lg bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center">
+                    <Trophy className="w-8 h-8 text-purple-400" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-white">{sponsorship.title}</h3>
+                  <p className="text-gray-400">{sponsorship.description}</p>
+                  <div className="flex items-center gap-2 text-gray-400">
+                    <span className="text-sm">Amount: ₹{sponsorship.amount}</span>
+                  </div>
+                  <button
+                    onClick={() => handleApply(sponsorship._id, 'sponsorship')}
+                    className="mt-4 w-full bg-purple-500 hover:bg-purple-600 text-white py-2 rounded-lg transition-colors"
+                  >
+                    Apply Now
+                  </button>
+                </div>
+              </div>
+            ))}
+
+            {activeTab === 'travel' && travelSupports.map(support => (
+              <div
+                key={support._id}
+                className="bg-black/30 backdrop-blur-xl border border-gray-800 rounded-xl p-6 hover:border-gray-700 transition-all duration-300"
+              >
+                <div className="flex flex-col gap-3">
+                  <div className="w-full h-32 rounded-lg bg-gradient-to-br from-green-500/20 to-teal-500/20 flex items-center justify-center">
+                    <MapPin className="w-8 h-8 text-green-400" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-white">{support.title}</h3>
+                  <p className="text-gray-400">{support.details}</p>
+                  <div className="flex items-center gap-2 text-gray-400">
+                    <span className="text-sm">Coverage: {support.coverageType}</span>
+                  </div>
+                  <button
+                    onClick={() => handleApply(support._id, 'travel')}
+                    className="mt-4 w-full bg-green-500 hover:bg-green-600 text-white py-2 rounded-lg transition-colors"
+                  >
+                    Apply Now
+                  </button>
+                </div>
+              </div>
+            ))}
+
+            {activeTab === 'applications' && applications.map(application => (
+              <div
+                key={application._id}
+                className="bg-black/30 backdrop-blur-xl border border-gray-800 rounded-xl p-6 hover:border-gray-700 transition-all duration-300"
+              >
+                <div className="flex flex-col gap-3">
+                  <h3 className="text-lg font-semibold text-white">{application.title}</h3>
+                  <div className="flex items-center gap-2 text-gray-400">
+                    <Calendar className="w-4 h-4" />
+                    <span className="text-sm">{new Date(application.appliedDate).toLocaleDateString()}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className={`px-2 py-1 rounded-full text-xs ${application.status === 'approved' ? 'bg-green-500/20 text-green-400' : application.status === 'rejected' ? 'bg-red-500/20 text-red-400' : 'bg-yellow-500/20 text-yellow-400'}`}>
+                      {application.status.charAt(0).toUpperCase() + application.status.slice(1)}
+                    </span>
                   </div>
                 </div>
               </div>
             ))}
+
+            {activeTab === 'profile' && <AthleteProfile />}
           </div>
         )}
       </div>

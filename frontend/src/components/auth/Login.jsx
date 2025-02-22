@@ -28,18 +28,24 @@ const Login = ({ userType }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(''); // Clear any previous errors
     try {
       const response = await axios.post(`/api/${userType.toLowerCase()}s/login`, formData);
       if (response.data.token) {
         try {
           await login(response.data.token, userType.toLowerCase());
+          navigate(`/${userType.toLowerCase()}/dashboard`);
         } catch (loginError) {
           setError(loginError.message);
-          return;
         }
       }
     } catch (error) {
-      setError(error.response?.data?.message || 'Login failed. Please try again.');
+      setError(error.response?.data?.message || 'Invalid credentials. Please try again.');
+      // Reset form data on error
+      setFormData({
+        email: formData.email,
+        password: ''
+      });
     }
   };
 
